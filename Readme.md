@@ -1,7 +1,7 @@
 # Unzzz
 
 # Weave
-[![Unzzz v0.0.1](https://img.shields.io/badge/unzzz-v0.0.1-44dfd1.svg)](https://www.npmjs.com/package/unzzz)
+[![Unzzz v0.0.2](https://img.shields.io/badge/unzzz-v0.0.2-44dfd1.svg)](https://www.npmjs.com/package/unzzz)
 ![Stability: Beta](https://img.shields.io/badge/stability-beta-69b0ba.svg)
 
 ## Overview
