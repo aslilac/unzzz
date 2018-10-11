@@ -1,0 +1,19 @@
+{
+  "name": "unzzz",
+  "version": "0.0.1",
+  "description": "Unzips .zip files",
+  "main": "unzzz.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/partheseas/unzzz.git"
+  },
+  "author": "Kayla Washburn",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/partheseas/unzzz/issues"
+  },
+  "homepage": "https://github.com/partheseas/unzzz#readme",
+  "dependencies": {
+    "gardens": "^3.1.4"
+  }
+}
