@@ -1,12 +1,16 @@
 # Unzzz
 
 # Weave
-[![Unzzz v0.0.2](https://img.shields.io/badge/unzzz-v0.0.2-44dfd1.svg)](https://www.npmjs.com/package/unzzz)
+[![Unzzz v0.1.0](https://img.shields.io/badge/unzzz-v0.1.0-44dfd1.svg)](https://www.npmjs.com/package/unzzz)
 ![Stability: Beta](https://img.shields.io/badge/stability-beta-69b0ba.svg)
 
 ## Overview
 A lightweight implementation of reading .zip files, because JSZip is a behemoth
 and I'm not about that life.
+
+For the sake of being lightweight, it only supports DEFLATE compression, and
+does not crc32 check the decompressed data for validity. Aside from that, it
+tries to be *very* safe and validate pretty much everything else possible.
 
 ### Usage
 ```JavaScript
@@ -14,9 +18,15 @@ const unzzz = require( 'unzzz' )
 
 unzzz( pathToArchive )
   .then( archive => {
+    // Iterate over all the files in the archive
     for ( each in archive.files ) {
-      archive.unzipFile( each )
+      // Retrieve an uncompressed buffer of the file
+      archive.unzipBuffer( 'dir/filename.ext' )
+        .then( buffer => console.log( buffer ) )
     }
+
+    // Pull out specific files and save the uncompressed files to storage
+    archive.unzipFile( each, destination )
   })
 ```
 

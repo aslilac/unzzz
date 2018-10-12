@@ -1,3 +1,6 @@
+// MIT License / Copyright Kayla Washburn 2018
+"use strict";
+
 const garden = require( 'gardens' ).createScope( 'zzz' )
 
 const assert = require( 'assert' )
@@ -64,6 +67,7 @@ class Reader {
 class Zzz {
   constructor() {
     this.files = {}
+    this.map = {}
   }
 
   read( archive ) {
@@ -76,15 +80,25 @@ class Zzz {
 
         this.archiveBuffer = archiveBuffer
 
-        this._parseEndOfCentralDirectoryHeader()
-        this._parseCentralDirectoryHeaders()
+        this._begin()
+        this._validateMap()
 
         fulfill( this )
       })
     })
   }
 
-  _parseEndOfCentralDirectoryHeader() {
+  _validateMap() {
+    // This checks to make sure that all the data in the file is accounted for.
+    // If there is unnecessary data in the file, that raises a red flag in my eyes.
+    // Every block should end at either the beginning of the next block or the end
+    // of the file.
+    let position = 0
+    while ( this.map[ position ] ) position = this.map[ position ]
+    assert.equal( position, this.archiveBuffer.length )
+  }
+
+  _begin() {
     let reader = new Reader( this.archiveBuffer )
     reader.findNext( END_OF_CENTRAL_DIRECTORY )
 
@@ -113,7 +127,11 @@ class Zzz {
     assert.equal( eocd.centralDirectoryStartDisk, 0 )
     assert.equal( eocd.localListingCount, eocd.globalListingCount )
 
+    // Store mapping data
+    this.map[ eocd._begin ] = eocd._end
     this.endOfCentralDirectory = eocd
+
+    this._parseCentralDirectoryHeaders()
   }
 
   _parseCentralDirectoryHeaders() {
@@ -168,21 +186,13 @@ class Zzz {
       assert.equal( listing.fileName, listing.localHeader.fileName )
       assert.equal( listing.fileDisk, 0 )
 
-      // Map file name to this information
+      // Store mapping data
+      this.map[ listing._begin ] = listing._end
       this.files[ listing.fileName ] = listing
     }
 
-    // garden.log( Object.keys( this.listings ).map( name => {
-    //   let each = this.listings[ name ]
-    //   return {
-    //     fileName: each.fileName,
-    //     compressedSize: each.compressedSize,
-    //     lrange: [ each._begin, each._end ],
-    //     frange: [ each.localHeader._begin, each.localHeader._end ],
-    //     datarange: [ each.startOfData, each.endOfData ],
-    //     drange: [ each.localHeader._descriptorBegin, each.localHeader._descriptorEnd ],
-    //   }
-    // }) )
+    // Assert that the central directory is the correct size
+    assert.equal( eocd.sizeOfCentralDirectory, reader.position - eocd.startOfCentralDirectory )
   }
 
   _parseLocalFileHeader( directoryListing ) {
@@ -210,13 +220,12 @@ class Zzz {
     // COMPLETELY the wrong spot.
     directoryListing.startOfData = reader.position
     directoryListing.endOfData = directoryListing.startOfData + directoryListing.compressedSize
-    localHeader._end = reader.position
+    localHeader._end = directoryListing.endOfData
 
     if ( localHeader.bitFlag & 8 ) {
       reader.position += directoryListing.compressedSize
       localHeader._descriptorBegin = reader.position
 
-      // assert( reader.position === endOfHeader + directoryListing.compressedSize )
       // This signature is optional, so check if we need to eat it
       reader.peek( 4 ).equals( LOCAL_FILE_DESCRIPTOR ) && reader.readRaw( 4 )
 
@@ -226,22 +235,45 @@ class Zzz {
         uncompressedSize: reader.readLittleEndian( 4 )
       })
 
-      localHeader._descriptorEnd = reader.position
+      localHeader._end = reader.position
     }
+
 
     // Assert that the signature is correct
     assert.equal( localHeader.signature, leToInt( LOCAL_FILE ) )
 
+    // Store mapping data
+    this.map[ localHeader._begin ] = localHeader._end
     return localHeader
   }
 
-  unzipFile( from, to = path.basename( from ) ) {
-    let listing = this.files[ from ]
+  unzipBuffer( from ) {
+    return new Promise( ( fulfill, reject ) => {
+      let listing = this.files[ from ]
 
-    zlib.inflateRaw( this.archiveBuffer.slice( listing.startOfData, listing.endOfData ), ( error, buffer ) => {
-      if ( error ) return garden.error( 'Failed to unzip!!!', error )
-      fs.writeFile( to, buffer, error => {
-        if ( error ) return garden.error( 'Failed to write!!!', error )
+      zlib.inflateRaw( this.archiveBuffer.slice( listing.startOfData, listing.endOfData ), ( error, buffer ) => {
+        if ( error ) {
+          reject( error )
+          return garden.error( 'Failed to unzip file', error )
+        }
+        assert.equal( listing.uncompressedSize, buffer.length )
+
+        fulfill( buffer )
+      })
+    })
+  }
+
+  unzipFile( from, to = path.basename( from ) ) {
+    return new Promise( ( fulfill, reject ) => {
+      this.unzipBuffer( from ).then( buffer => {
+        fs.writeFile( to, buffer, error => {
+          if ( error ) {
+            reject( error )
+            return garden.error( 'Failed to write file', error )
+          }
+
+          fulfill()
+        })
       })
     })
   }
