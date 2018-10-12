@@ -64,7 +64,7 @@ class Reader {
   }
 }
 
-class Zzz {
+class Unzzz {
   constructor() {
     this.files = {}
     this.map = {}
@@ -280,6 +280,6 @@ class Zzz {
 }
 
 module.exports = function ( ...args ) {
-  let archive = new Zzz()
+  let archive = new Unzzz()
   return archive.read( ...args )
 }
