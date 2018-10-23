@@ -1,5 +1,5 @@
 # Unzzz
-[![Unzzz v0.1.0](https://img.shields.io/badge/unzzz-v0.1.0-44dfd1.svg)](https://www.npmjs.com/package/unzzz)
+[![Unzzz v0.1.1](https://img.shields.io/badge/unzzz-v0.1.1-44dfd1.svg)](https://www.npmjs.com/package/unzzz)
 ![Stability: Beta](https://img.shields.io/badge/stability-beta-69b0ba.svg)
 
 ## Overview
