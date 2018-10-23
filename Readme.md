@@ -19,12 +19,12 @@ unzzz( pathToArchive )
     // Iterate over all the files in the archive
     for ( each in archive.files ) {
       // Retrieve an uncompressed buffer of the file
-      archive.unzipBuffer( 'dir/filename.ext' )
+      archive.unzipBuffer( each )
         .then( buffer => console.log( buffer ) )
     }
 
     // Pull out specific files and save the uncompressed files to storage
-    archive.unzipFile( each, destination )
+    archive.unzipFile( 'dir/filename.ext', destination )
   })
 ```
 

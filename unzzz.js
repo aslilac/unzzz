@@ -78,13 +78,19 @@ class Unzzz {
           return garden.error( 'Unable to read file' )
         }
 
-        this.archiveBuffer = archiveBuffer
-
-        this._begin()
-        this._validateMap()
-
-        fulfill( this )
+        this.readBuffer( archiveBuffer ).then( fulfill, reject )
       })
+    })
+  }
+
+  readBuffer( archiveBuffer ) {
+    return new Promise( ( fulfill, reject ) => {
+      this.archiveBuffer = archiveBuffer
+
+      this._begin()
+      this._validateMap()
+
+      fulfill( this )
     })
   }
 
@@ -279,7 +285,9 @@ class Unzzz {
   }
 }
 
-module.exports = function ( ...args ) {
+module.exports = function ( source ) {
   let archive = new Unzzz()
-  return archive.read( ...args )
+  if ( Buffer.isBuffer( source ) ) return archive.readBuffer( source )
+  else if ( typeof source === 'string' ) return archive.read( source )
+  else throw garden.typeerror( 'Unzzz: Argument `source` must be a file path (string) or a buffer.' )
 }

@@ -1,6 +1,6 @@
 {
   "name": "unzzz",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Unzips .zip files",
   "main": "unzzz.js",
   "repository": {
@@ -14,6 +14,6 @@
   },
   "homepage": "https://github.com/partheseas/unzzz#readme",
   "dependencies": {
-    "gardens": "^3.1.4"
+    "gardens": "^3.2.0"
   }
 }
