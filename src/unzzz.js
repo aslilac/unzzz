@@ -1,14 +1,13 @@
 // MIT License / Copyright Kayla Washburn 2018
 "use strict";
 
-const garden = require( 'gardens' ).createScope( 'zzz' )
+import fs from 'fs'
+import path from 'path'
+import zlib from 'zlib'
 
-const assert = require( 'assert' )
-const fs = require( 'fs' )
-const path = require( 'path' )
-const zlib = require( 'zlib' )
+import gardens from 'gardens'
+const garden = gardens.createScope( 'unzzz' )
 
-// const endOfCentralDirectory = Buffer.from([ 0x06, 0x05, 0x4b, 0x50 ])
 const END_OF_CENTRAL_DIRECTORY = Buffer.from([ 0x50, 0x4b, 0x05, 0x06 ])
 const CENTRAL_DIRECTORY = Buffer.from([ 0x50, 0x4b, 0x01, 0x02 ])
 const LOCAL_FILE = Buffer.from([ 0x50, 0x4b, 0x03, 0x04 ])
@@ -75,7 +74,7 @@ class Unzzz {
       fs.readFile( archive, ( error, archiveBuffer ) => {
         if ( error ) {
           reject( error )
-          return garden.error( 'Unable to read file' )
+          throw garden.error( 'Unable to read file' )
         }
 
         this.readBuffer( archiveBuffer ).then( fulfill, reject )
@@ -101,7 +100,7 @@ class Unzzz {
     // of the file.
     let position = 0
     while ( this.map[ position ] ) position = this.map[ position ]
-    assert.equal( position, this.archiveBuffer.length )
+    garden.assert_eq( position, this.archiveBuffer.length )
   }
 
   _begin() {
@@ -127,11 +126,11 @@ class Unzzz {
     })
 
     // Assert that the signature is correct
-    assert.equal( eocd.signature, leToInt( END_OF_CENTRAL_DIRECTORY ) )
+    garden.assert_eq( eocd.signature, leToInt( END_OF_CENTRAL_DIRECTORY ) )
     // Assert that there is only one disk
-    assert.equal( eocd.diskNumber, 0 )
-    assert.equal( eocd.centralDirectoryStartDisk, 0 )
-    assert.equal( eocd.localListingCount, eocd.globalListingCount )
+    garden.assert_eq( eocd.diskNumber, 0 )
+    garden.assert_eq( eocd.centralDirectoryStartDisk, 0 )
+    garden.assert_eq( eocd.localListingCount, eocd.globalListingCount )
 
     // Store mapping data
     this.map[ eocd._begin ] = eocd._end
@@ -180,17 +179,17 @@ class Unzzz {
       listing.localHeader = this._parseLocalFileHeader( listing )
 
       // Assert that the signature is correct
-      assert.equal( listing.signature, leToInt( CENTRAL_DIRECTORY ) )
+      garden.assert_eq( listing.signature, leToInt( CENTRAL_DIRECTORY ) )
       // Assert that information matches in both listings
-      assert.equal( listing.compressionMethod, 8 )
-      assert.equal( listing.localHeader.compressionMethod, 8 )
-      assert.equal( listing.modifiedTime, listing.localHeader.modifiedTime )
-      assert.equal( listing.modifiedDate, listing.localHeader.modifiedDate )
-      assert.equal( listing.crc32, listing.localHeader.crc32 )
-      assert.equal( listing.compressedSize, listing.localHeader.compressedSize )
-      assert.equal( listing.uncompressedSize, listing.localHeader.uncompressedSize )
-      assert.equal( listing.fileName, listing.localHeader.fileName )
-      assert.equal( listing.fileDisk, 0 )
+      garden.assert_eq( listing.compressionMethod, 8 )
+      garden.assert_eq( listing.localHeader.compressionMethod, 8 )
+      garden.assert_eq( listing.modifiedTime, listing.localHeader.modifiedTime )
+      garden.assert_eq( listing.modifiedDate, listing.localHeader.modifiedDate )
+      garden.assert_eq( listing.crc32, listing.localHeader.crc32 )
+      garden.assert_eq( listing.compressedSize, listing.localHeader.compressedSize )
+      garden.assert_eq( listing.uncompressedSize, listing.localHeader.uncompressedSize )
+      garden.assert_eq( listing.fileName, listing.localHeader.fileName )
+      garden.assert_eq( listing.fileDisk, 0 )
 
       // Store mapping data
       this.map[ listing._begin ] = listing._end
@@ -198,7 +197,7 @@ class Unzzz {
     }
 
     // Assert that the central directory is the correct size
-    assert.equal( eocd.sizeOfCentralDirectory, reader.position - eocd.startOfCentralDirectory )
+    garden.assert_eq( eocd.sizeOfCentralDirectory, reader.position - eocd.startOfCentralDirectory )
   }
 
   _parseLocalFileHeader( directoryListing ) {
@@ -244,9 +243,8 @@ class Unzzz {
       localHeader._end = reader.position
     }
 
-
     // Assert that the signature is correct
-    assert.equal( localHeader.signature, leToInt( LOCAL_FILE ) )
+    garden.assert_eq( localHeader.signature, leToInt( LOCAL_FILE ) )
 
     // Store mapping data
     this.map[ localHeader._begin ] = localHeader._end
@@ -262,7 +260,7 @@ class Unzzz {
           reject( error )
           return garden.error( 'Failed to unzip file', error )
         }
-        assert.equal( listing.uncompressedSize, buffer.length )
+        garden.assert_eq( listing.uncompressedSize, buffer.length )
 
         fulfill( buffer )
       })
@@ -275,7 +273,7 @@ class Unzzz {
         fs.writeFile( to, buffer, error => {
           if ( error ) {
             reject( error )
-            return garden.error( 'Failed to write file', error )
+            return garden.error( `Failed to write file ${ to }`, error )
           }
 
           fulfill()
@@ -283,9 +281,30 @@ class Unzzz {
       })
     })
   }
+
+  safeUnzipFile( from, to = from ) {
+    return new Promise( ( fulfill, reject ) => {
+      this.unzipBuffer( from ).then( buffer => {
+        fs.stat( to, ( error, stat ) => {
+          // Ignore errors because it probably just doesn't exist.
+          // We actually care about stat, because we don't want it to exist.
+          if ( stat ) throw garden.error( `Attempting to unzip file to ${ to } but it already exists!` )
+
+          fs.writeFile( to, buffer, error => {
+            if ( error ) {
+              reject( error )
+              return garden.error( 'Failed to write file', error )
+            }
+
+            fulfill()
+          })
+        })
+      })
+    })
+  }
 }
 
-module.exports = function ( source ) {
+export default function ( source ) {
   let archive = new Unzzz()
   if ( Buffer.isBuffer( source ) ) return archive.readBuffer( source )
   else if ( typeof source === 'string' ) return archive.read( source )
