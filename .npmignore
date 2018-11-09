@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+
+# Dependencies
+node_modules
+
+# Logs
+*.log
+
+# Logos, etc.
+media
+
+# Tests
+tests
