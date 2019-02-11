@@ -17,7 +17,7 @@ const unzzz = require( 'unzzz' )
 unzzz( pathToArchive )
   .then( archive => {
     // Iterate over all the files in the archive
-    for ( each in archive.files ) {
+    for ( let each in archive.files ) {
       // Retrieve an uncompressed buffer of the file
       archive.unzipBuffer( each )
         .then( buffer => console.log( buffer ) )
