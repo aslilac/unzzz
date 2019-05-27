@@ -1,5 +1,5 @@
 export default {
-  input: 'src/unzzz.js',
+  input: 'lib/unzzz.js',
   external: [ 'fs', 'gardens', 'path', 'zlib' ],
   output: {
     format: 'cjs',
