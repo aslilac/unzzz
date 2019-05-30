@@ -9,7 +9,10 @@
   "bugs": "https://github.com/partheseas/unzzz/issues",
   "homepage": "https://github.com/partheseas/unzzz#readme",
   "dependencies": {
-    "gardens": "^4.0.2"
+    "gardens": "^4.1.1"
+  },
+  "devDependencies": {
+    "rollup": "^1.12.4"
   },
   "installConfig": {
     "pnp": true
