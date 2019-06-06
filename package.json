@@ -1,18 +1,20 @@
 {
   "name": "unzzz",
   "version": "0.1.1",
+  "author": "McKayla Washburn",
   "description": "Unzips .zip files",
+  "license": "MIT",
+  "files": [
+    "dist/*"
+  ],
   "main": "dist/unzzz.js",
   "repository": "partheseas/unzzz",
-  "author": "McKayla Washburn",
-  "license": "MIT",
   "bugs": "https://github.com/partheseas/unzzz/issues",
-  "homepage": "https://github.com/partheseas/unzzz#readme",
   "dependencies": {
     "gardens": "^4.1.1"
   },
   "devDependencies": {
-    "rollup": "^1.12.4"
+    "rollup": "^1.14.2"
   },
   "installConfig": {
     "pnp": true

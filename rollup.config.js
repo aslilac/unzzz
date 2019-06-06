@@ -4,9 +4,6 @@ export default {
   output: {
     format: 'cjs',
     file: 'dist/unzzz.js',
-    sourcemap: true,
-    globals: {
-      'gardens': 'gardens'
-    }
+    sourcemap: true
   }
 }
