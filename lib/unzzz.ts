@@ -17,6 +17,10 @@ interface BufferMap {
 }
 
 /**
+ * **Notice:** Not to be used for directly decompressing archives. For that, use
+ * the [[unzzz]] function documented below. This type is for developing plugins
+ * that can extend the number of supported compression methods.
+ *
  * A function that can be used by unzzz to decompress a buffer and extract a file
  * from an archive.
  *
@@ -186,7 +190,7 @@ Unzzz.decompressors[ 8 ] = ( compressed: Buffer ) =>
  *   // for details on why.
  *   // Something like this is a much better solution.
  *   // Files output: 1.js, 2.jpg, 3.html, etc.
- *   archive.unzipFile( name, `i${path.extname( name )}` );
+ *   archive.unzipFile( name, `${i++}${path.extname( name )}` );
  * }
  * ```
  *
