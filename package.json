@@ -1,6 +1,6 @@
 {
   "name": "unzzz",
-  "version": "0.1.1",
+  "version": "0.9.0",
   "author": "McKayla Washburn",
   "description": "Unzips .zip files",
   "license": "MIT",
@@ -8,15 +8,30 @@
     "dist/*"
   ],
   "main": "dist/unzzz.js",
+  "types": "dist/unzzz.d.ts",
   "repository": "partheseas/unzzz",
   "bugs": "https://github.com/partheseas/unzzz/issues",
+  "keywords": [
+    "zip",
+    "deflate"
+  ],
   "dependencies": {
-    "gardens": "^4.1.1"
+    "gardens": "^4.1.2"
   },
   "devDependencies": {
-    "rollup": "^1.14.2"
+    "@types/node": "^12.6.9",
+    "@typescript-eslint/eslint-plugin": "^1.13.0",
+    "@typescript-eslint/parser": "^1.13.0",
+    "ava": "^2.2.0",
+    "eslint": "^6.1.0",
+    "rollup": "^1.18.0",
+    "rollup-plugin-babel-minify": "^9.0.0",
+    "rollup-plugin-typescript2": "^0.22.1",
+    "typedoc": "^0.15.0",
+    "typescript": "^3.5.3"
   },
-  "installConfig": {
-    "pnp": true
+  "scripts": {
+    "now-build": "typedoc",
+    "test": "eslint --ext .ts lib && rollup -c"
   }
 }

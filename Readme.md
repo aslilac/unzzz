@@ -1,6 +1,7 @@
 # Unzzz
 ![package version](https://img.shields.io/badge/dynamic/json.svg?color=f0606d&label=unzzz&query=%24.version&url=https%3A%2F%2Funpkg.io%2Funzzz%2Fpackage.json&prefix=v)
 ![stability](https://img.shields.io/badge/stability-beta-6680f2.svg)
+[![build status](https://travis-ci.org/partheseas/unzzz.svg?branch=master)](https://travis-ci.org/partheseas/unzzz)
 
 A lightweight package for reading .zip files, because JSZip is a behemoth
 and I'm not about that life.
@@ -16,6 +17,8 @@ yarn add unzzz
 You should use Yarn and [pnp](https://yarnpkg.com/en/docs/pnp).
 
 ## Usage
+- [Documentation](https://unzzz.now.sh)
+
 ```JavaScript
 import unzzz from 'unzzz'
 
