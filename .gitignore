@@ -1,8 +1,16 @@
 # macOS
 .DS_Store
 
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Builds
+.rpt2_cache
+dist
+doc
+
 # Dependencies
 node_modules
-
-# Logs
-*.log
+.pnp
