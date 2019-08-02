@@ -8,7 +8,7 @@ import Reader from './reader';
 import gardens from '../gardens.config';
 const garden = gardens.scope();
 
-interface ArchiveFiles {
+export interface ArchiveFiles {
   [ name: string ]: CentralDirectoryListing
 }
 
@@ -173,6 +173,12 @@ Unzzz.decompressors[ 8 ] = ( compressed: Buffer ) =>
     );
   });
 
+export {
+  EndOfCentralDirectory,
+  CentralDirectoryListing,
+  Reader
+};
+
 /**
  * This function returns a promise which will fulfill with an [[Unzzz]],
  * an actionable class that enables you to interact with the archive.
@@ -204,8 +210,3 @@ export default function unzzz( source: Buffer | string ): Promise<Unzzz> {
     ? archive.readFromBuffer( source )
     : archive.readFromFile( source );
 }
-
-Object.assign( unzzz, {
-  Unzzz,
-  decompressors: Unzzz.decompressors
-});
