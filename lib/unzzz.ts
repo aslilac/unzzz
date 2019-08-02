@@ -6,7 +6,7 @@ import EndOfCentralDirectory from './eocd';
 import Reader from './reader';
 
 import gardens from '../gardens.config';
-const garden = gardens.scope( 'unzzz' );
+const garden = gardens.scope();
 
 interface ArchiveFiles {
   [ name: string ]: CentralDirectoryListing
@@ -16,19 +16,33 @@ interface BufferMap {
   [ entry: number ]: number
 }
 
-export class Unzzz {
+class Unzzz {
+  /**
+   * An object which maps the name of a file in the archive to some interal
+   * details used to extract the file. If you wish to iterate over all of the
+   * items in an archive, this provides an easy way to do it.
+   *
+   * You don't need to worry about the values stored in the object, only the
+   * names of the keys.
+   *
+   * ```JavaScript
+   * for ( const file in archive.files ) {
+   *  archive.unzipBuffer( file );
+   * }
+   * ```
+   */
   readonly files: ArchiveFiles = {};
-  readonly map: BufferMap = {};
 
+  private map: BufferMap = {};
   private archiveBuffer: Buffer;
   private reader: Reader;
 
-  async read( archivePath: string ): Promise<this> {
+  async readFromFile( archivePath: string ): Promise<this> {
     const archiveBuffer = await fs.readFile( archivePath );
-    return this.readBuffer( archiveBuffer );
+    return this.readFromBuffer( archiveBuffer );
   }
 
-  readBuffer( archiveBuffer: Buffer ): Promise<this> {
+  readFromBuffer( archiveBuffer: Buffer ): Promise<this> {
     this.archiveBuffer = archiveBuffer;
 
     this.reader = new Reader( archiveBuffer );
@@ -107,7 +121,7 @@ export class Unzzz {
    * archive as a part of this parameter. The ZIP specification does not prevent
    * a file from beginning with '../' or '/', which could make you vulnerable
    * to attacks. A malicious archive could extract one its files to anywhere on
-   * your disk, overwritting files that you might rely on to handle sensitive data.
+   * your disk and overwrite files that you might rely on to handle sensitive data.
    */
   async unzipFile( name: string, destination: string ): Promise<void> {
     const uncompressedData = await this.unzipBuffer( name );
@@ -137,16 +151,10 @@ export class Unzzz {
  * @param source Can be either a path to where the archive is stored on disk
  * or a buffer of a valid zip archive.
  */
-function unzzz( source: Buffer | string ): Promise<Unzzz> {
+export default function unzzz( source: Buffer | string ): Promise<Unzzz> {
   const archive = new Unzzz();
 
   return Buffer.isBuffer( source )
-    ? archive.readBuffer( source )
-    : archive.read( source );
+    ? archive.readFromBuffer( source )
+    : archive.readFromFile( source );
 }
-
-Object.assign( unzzz, {
-
-});
-
-export default unzzz;

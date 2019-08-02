@@ -44,8 +44,6 @@ export default class CentralDirectoryListing implements Mappable {
       compressionMethod: reader.readLittleEndian( 2 ),
       modifiedTime: reader.readLittleEndian( 2 ),
       modifiedDate: reader.readLittleEndian( 2 ),
-      // TODO: Validate crc32. We would only need to do it on either cdl or lh,
-      // because we assert that they are the same.
       crc32: reader.readLittleEndian( 4 ),
       compressedSize: reader.readLittleEndian( 4 ),
       uncompressedSize: reader.readLittleEndian( 4 ),

@@ -8,7 +8,7 @@ const garden = gardens.scope( 'lh' );
 const LOCAL_FILE = Buffer.from( [ 0x50, 0x4b, 0x03, 0x04 ] );
 const LOCAL_FILE_DESCRIPTOR = Buffer.from( [ 0x50, 0x4b, 0x07, 0x08 ] );
 
-interface Descriptor extends Mappable {
+export interface Descriptor extends Mappable {
   _begin: number,
   _end: number,
 
