@@ -16,7 +16,17 @@ interface BufferMap {
   [ entry: number ]: number
 }
 
-class Unzzz {
+/**
+ * A function that can be used by unzzz to decompress a buffer and extract a file
+ * from an archive.
+ *
+ * *The `cdl` parameter can sometimes be ignored, but certain compression methods
+ * will set values on this object (such as the `bitFlags` property) that must be
+ * used by the decompressor.*
+ */
+export type Decompressor = ( compressed: Buffer, cdl: CentralDirectoryListing ) => Promise<Buffer>;
+
+export class Unzzz {
   /**
    * An object which maps the name of a file in the archive to some interal
    * details used to extract the file. If you wish to iterate over all of the
@@ -27,7 +37,8 @@ class Unzzz {
    *
    * ```JavaScript
    * for ( const file in archive.files ) {
-   *  archive.unzipBuffer( file );
+   *  const buffer = await archive.unzipBuffer( file );
+   *  // ...
    * }
    * ```
    */
@@ -36,6 +47,15 @@ class Unzzz {
   private map: BufferMap = {};
   private archiveBuffer: Buffer;
   private reader: Reader;
+
+  /**
+   * If you wish to add in a custom decompressor to support additional
+   * compression methods, you can extend this object to do so. The index
+   * should match the compressionMethod identifier as defined by
+   * https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT in section 4.4.5.
+   * The function should match the signature defined by the [[Decompressor]] type.
+   */
+  static decompressors: Decompressor[] = [];
 
   async readFromFile( archivePath: string ): Promise<this> {
     const archiveBuffer = await fs.readFile( archivePath );
@@ -83,35 +103,32 @@ class Unzzz {
     );
   }
 
-  unzipBuffer( name: string ): Promise<Buffer> {
-    return new Promise( ( fulfill, reject ) => {
-      const cdl = this.files[ name ];
-      const compressedData = this.archiveBuffer.slice(
-        cdl.localHeader.startOfCompressedFile,
-        cdl.localHeader.endOfCompressedFile
-      );
+  async unzipBuffer( name: string ): Promise<Buffer> {
+    const cdl: CentralDirectoryListing = this.files[ name ];
 
-      if ( cdl.compressionMethod === 0 ) {
-        fulfill( compressedData );
-      }
+    if ( !cdl ) return null;
 
-      else if ( cdl.compressionMethod === 8 ) {
-        zlib.inflateRaw(
-          compressedData,
-          ( error, buffer ) => {
-            if ( error ) return reject( error );
+    const decompressor = Unzzz.decompressors[ cdl.compressionMethod ];
+    const compressedData = this.archiveBuffer.slice(
+      cdl.localHeader.startOfCompressedFile,
+      cdl.localHeader.endOfCompressedFile
+    );
 
-            garden.assert_eq(
-              cdl.uncompressedSize,
-              buffer.length,
-              'Uncompressed data has incorrect length.'
-            );
+    if ( typeof decompressor === 'function' ) {
+      const uncompressedData: Buffer = await decompressor( compressedData, cdl );
 
-            fulfill( buffer );
-          }
+      if ( Buffer.isBuffer( uncompressedData ) ) {
+        garden.assert_eq(
+          cdl.uncompressedSize,
+          uncompressedData.length,
+          'Uncompressed data has incorrect length.'
         );
+
+        return uncompressedData;
       }
-    });
+    }
+
+    throw garden.typeerror( 'Invalid decompressor installed!' );
   }
 
   /**
@@ -129,11 +146,29 @@ class Unzzz {
   }
 }
 
+// Decompressor for method 'store'
+Unzzz.decompressors[ 0 ] = compressed => Promise.resolve( compressed );
+
+// Decompressor for method 'deflate'
+Unzzz.decompressors[ 8 ] = ( compressed: Buffer ) =>
+  new Promise( ( fulfill, reject ) => {
+    zlib.inflateRaw(
+      compressed,
+      ( error, buffer ) => {
+        if ( error ) return reject( error );
+
+        fulfill( buffer );
+      }
+    );
+  });
+
 /**
  * This function returns a promise which will fulfill with an [[Unzzz]],
  * an actionable class that enables you to interact with the archive.
  *
  * ```JavaScript
+ * import unzzz from 'unzzz';
+ *
  * const archive = await unzzz( 'archive.zip' );
  * const uncompressedData = await archive.unzipBuffer( fileName );
  *
@@ -158,3 +193,8 @@ export default function unzzz( source: Buffer | string ): Promise<Unzzz> {
     ? archive.readFromBuffer( source )
     : archive.readFromFile( source );
 }
+
+Object.assign( unzzz, {
+  Unzzz,
+  decompressors: Unzzz.decompressors
+});

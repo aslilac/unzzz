@@ -9,6 +9,7 @@ export default {
     minify({ comments: false })
   ],
   output: {
+    exports: 'named',
     format: 'cjs',
     file: 'dist/unzzz.js',
     sourcemap: true
