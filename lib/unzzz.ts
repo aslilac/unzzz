@@ -126,9 +126,16 @@ export class Unzzz {
 
         return uncompressedData;
       }
+
+      throw garden.typeerror(
+        `Invalid decompression for compressionMethod ${cdl.compressionMethod}!`
+      );
     }
 
-    throw garden.typeerror( 'Invalid decompressor installed!' );
+    // If we make it here and haven't returned a buffer, then the decompressor
+    throw garden.error(
+      `No decompressor available for compressionMethod ${cdl.compressionMethod}!`
+    );
   }
 
   /**
