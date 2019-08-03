@@ -5,8 +5,8 @@ import Reader from './reader';
 import gardens from '../gardens.config';
 const garden = gardens.scope( 'lh' );
 
-const LOCAL_FILE = Buffer.from( [ 0x50, 0x4b, 0x03, 0x04 ] );
-const LOCAL_FILE_DESCRIPTOR = Buffer.from( [ 0x50, 0x4b, 0x07, 0x08 ] );
+const LOCAL_HEADER = Buffer.from( [ 0x50, 0x4b, 0x03, 0x04 ] );
+const LOCAL_HEADER_DESCRIPTOR = Buffer.from( [ 0x50, 0x4b, 0x07, 0x08 ] );
 
 export interface Descriptor extends Mappable {
   _begin: number,
@@ -42,6 +42,12 @@ export default class LocalHeader implements Mappable {
   descriptor: Descriptor;
 
   constructor( reader: Reader, cdl: CentralDirectoryListing ) {
+    // Assert that the signature is correct
+    garden.assert(
+      reader.peek( 4 ).equals( LOCAL_HEADER ),
+      'LocalHeader received reader at an invalid position'
+    );
+
     Object.assign( this, {
       _begin: reader.position,
       signature: reader.readRaw( 4 ),
@@ -78,7 +84,7 @@ export default class LocalHeader implements Mappable {
 
       this.descriptor = {
         _begin: this.endOfCompressedFile,
-        signature: reader.peek( 4 ).equals( LOCAL_FILE_DESCRIPTOR )
+        signature: reader.peek( 4 ).equals( LOCAL_HEADER_DESCRIPTOR )
           ? reader.readRaw( 4 )
           : null,
         crc32: reader.readLittleEndian( 4 ),
@@ -93,8 +99,5 @@ export default class LocalHeader implements Mappable {
     this._end = this.descriptor
       ? this.descriptor._end
       : this.endOfCompressedFile;
-
-    // Assert that the signature is correct
-    garden.assert( this.signature.equals( LOCAL_FILE ) );
   }
 }

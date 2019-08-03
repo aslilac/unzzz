@@ -5,7 +5,7 @@ import Reader from './reader';
 import gardens from '../gardens.config';
 const garden = gardens.scope( 'cdl' );
 
-const CENTRAL_DIRECTORY = Buffer.from( [ 0x50, 0x4b, 0x01, 0x02 ] );
+const CENTRAL_DIRECTORY_LISTING = Buffer.from( [ 0x50, 0x4b, 0x01, 0x02 ] );
 
 export default class CentralDirectoryListing implements Mappable {
   _begin: number;
@@ -35,6 +35,12 @@ export default class CentralDirectoryListing implements Mappable {
   localHeader: LocalHeader;
 
   constructor( reader: Reader ) {
+    // Assert that the signature is correct
+    garden.assert(
+      reader.peek( 4 ).equals( CENTRAL_DIRECTORY_LISTING ),
+      'CentralDirectoryListing received reader at an invalid position'
+    );
+
     Object.assign( this, {
       _begin: reader.position,
       signature: reader.readRaw( 4 ),
@@ -63,20 +69,26 @@ export default class CentralDirectoryListing implements Mappable {
       _end: reader.position
     });
 
+    // Parse the corresponding local header
     this.localHeader = new LocalHeader( reader.clone( this.fileHeaderOffset ), this );
 
-    // Assert that the signature is correct
-    garden.assert( this.signature.equals( CENTRAL_DIRECTORY ) );
+    // If the compressionMethod is "stored" then the sizes should be equal
+    if ( this.compressionMethod === 0 ) {
+      garden.assert_eq( this.compressedSize, this.uncompressedSize );
+    }
     // Assert that information matches in both listings
-    // These assert to 0 or 8 because we currently only support stored and deflate
-    garden.assert( [ 0, 8 ].includes( this.compressionMethod ) );
-    garden.assert( [ 0, 8 ].includes( this.localHeader.compressionMethod ) );
+    garden.assert_eq( this.compressionMethod, this.localHeader.compressionMethod );
     garden.assert_eq( this.modifiedTime, this.localHeader.modifiedTime );
     garden.assert_eq( this.modifiedDate, this.localHeader.modifiedDate );
     garden.assert_eq( this.fileName, this.localHeader.fileName );
     garden.assert_eq( this.fileDisk, 0 );
 
     if ( this.localHeader.descriptor ) {
+      // These values are required to be zero when a descriptor is present.
+      garden.assert_eq( this.localHeader.crc32, 0 );
+      garden.assert_eq( this.localHeader.compressedSize, 0 );
+      garden.assert_eq( this.localHeader.uncompressedSize, 0 );
+
       garden.assert_eq( this.crc32, this.localHeader.descriptor.crc32 );
       garden.assert_eq( this.compressedSize, this.localHeader.descriptor.compressedSize );
       garden.assert_eq( this.uncompressedSize, this.localHeader.descriptor.uncompressedSize );

@@ -21,7 +21,11 @@ export default class EndOfCentralDirectory implements Mappable {
   comment: Buffer;
 
   constructor( reader: Reader ) {
-    reader.findNext( END_OF_CENTRAL_DIRECTORY );
+    // Assert that the signature is correct
+    garden.assert(
+      reader.peek( 4 ).equals( END_OF_CENTRAL_DIRECTORY ),
+      'EndOfCentralDirectory received reader at an invalid position'
+    );
 
     Object.assign( this, {
       _begin: reader.position,
@@ -40,8 +44,6 @@ export default class EndOfCentralDirectory implements Mappable {
       _end: reader.position
     });
 
-    // Assert that the signature is correct
-    garden.assert( this.signature.equals( END_OF_CENTRAL_DIRECTORY ) );
     // Assert that there is only one disk
     garden.assert_eq( this.diskNumber, 0 );
     garden.assert_eq( this.centralDirectoryStartDisk, 0 );

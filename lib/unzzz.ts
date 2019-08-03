@@ -10,6 +10,8 @@ import crc32 from './crc';
 import gardens from '../gardens.config';
 const garden = gardens.scope();
 
+const END_OF_CENTRAL_DIRECTORY = Buffer.from( [ 0x50, 0x4b, 0x05, 0x06 ] );
+
 export interface ArchiveFiles {
   [ name: string ]: CentralDirectoryListing
 }
@@ -52,7 +54,6 @@ export class Unzzz {
 
   private map: BufferMap = {};
   private archiveBuffer: Buffer;
-  private reader: Reader;
 
   /**
    * If you wish to add in a custom decompressor to support additional
@@ -70,18 +71,18 @@ export class Unzzz {
 
   readFromBuffer( archiveBuffer: Buffer ): Promise<this> {
     this.archiveBuffer = archiveBuffer;
-
-    this.reader = new Reader( archiveBuffer );
+    const reader = new Reader( archiveBuffer );
 
     // The "EndOfCentralDirectory" is the main entry point of a zip file
-    const eocd = new EndOfCentralDirectory( this.reader );
+    reader.findNext( END_OF_CENTRAL_DIRECTORY );
+    const eocd = new EndOfCentralDirectory( reader );
 
     // Store mapping data
     this.map[ eocd._begin ] = eocd._end;
 
-    this.reader.moveTo( eocd.startOfCentralDirectory );
+    reader.moveTo( eocd.startOfCentralDirectory );
     for ( let i = 0; i < eocd.globalListingCount; i++ ) {
-      const cdl = new CentralDirectoryListing( this.reader );
+      const cdl = new CentralDirectoryListing( reader );
 
       // Store mapping data
       this.map[ cdl._begin ] = cdl._end;
