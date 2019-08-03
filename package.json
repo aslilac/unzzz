@@ -9,6 +9,7 @@
   ],
   "main": "dist/unzzz.js",
   "types": "dist/types/lib/unzzz.d.ts",
+  "homepage": "https://unzzz.now.sh",
   "repository": "partheseas/unzzz",
   "bugs": "https://github.com/partheseas/unzzz/issues",
   "keywords": [
