@@ -53,6 +53,12 @@ export default class BufferReader {
     return value;
   }
 
+  readSignedLittleEndian( length: number ) {
+    const le = this.currentBuffer.readIntLE( this.position, length );
+    this._position += length;
+    return le;
+  }
+
   readLittleEndian( length: number ) {
     const le = this.currentBuffer.readUIntLE( this.position, length );
     this._position += length;

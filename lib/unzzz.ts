@@ -5,6 +5,7 @@ import CentralDirectoryListing from './cdl';
 import EndOfCentralDirectory from './eocd';
 import LocalHeader from './lh';
 import Reader from './reader';
+import crc from './crc';
 
 import gardens from '../gardens.config';
 const garden = gardens.scope();
@@ -129,6 +130,14 @@ export class Unzzz {
           'Uncompressed data has incorrect length.'
         );
 
+        garden.assert_eq(
+          cdl.crc32,
+          crc( uncompressedData ),
+          'Uncompressed data has incorrect crc32 value.'
+        );
+
+        garden.debug( `crc32 and size verified for file ${name}` );
+
         return uncompressedData;
       }
 
@@ -178,7 +187,8 @@ export {
   EndOfCentralDirectory,
   CentralDirectoryListing,
   LocalHeader,
-  Reader
+  Reader,
+  crc
 };
 
 /**

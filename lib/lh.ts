@@ -50,7 +50,7 @@ export default class LocalHeader implements Mappable {
       compressionMethod: reader.readLittleEndian( 2 ),
       modifiedTime: reader.readLittleEndian( 2 ),
       modifiedDate: reader.readLittleEndian( 2 ),
-      crc32: reader.readLittleEndian( 4 ),
+      crc32: reader.readSignedLittleEndian( 4 ),
       compressedSize: reader.readLittleEndian( 4 ),
       uncompressedSize: reader.readLittleEndian( 4 ),
       fileNameLength: reader.readLittleEndian( 2 ),
