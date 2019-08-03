@@ -3,6 +3,7 @@ import zlib from 'zlib';
 
 import CentralDirectoryListing from './cdl';
 import EndOfCentralDirectory from './eocd';
+import LocalHeader from './lh';
 import Reader from './reader';
 
 import gardens from '../gardens.config';
@@ -176,6 +177,7 @@ Unzzz.decompressors[ 8 ] = ( compressed: Buffer ) =>
 export {
   EndOfCentralDirectory,
   CentralDirectoryListing,
+  LocalHeader,
   Reader
 };
 

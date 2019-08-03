@@ -42,8 +42,6 @@ export default class LocalHeader implements Mappable {
   descriptor: Descriptor;
 
   constructor( reader: Reader, cdl: CentralDirectoryListing ) {
-    reader.moveTo( cdl.fileHeaderOffset );
-
     Object.assign( this, {
       _begin: reader.position,
       signature: reader.readRaw( 4 ),
