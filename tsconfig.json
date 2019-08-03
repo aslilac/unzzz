@@ -2,6 +2,7 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "declaration": true,
+    "declarationDir": "dist/types",
     "moduleResolution": "node",
     "outDir": "dist",
     "target": "esnext"

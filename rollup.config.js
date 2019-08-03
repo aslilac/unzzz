@@ -5,8 +5,12 @@ export default {
   input: 'lib/unzzz.ts',
   external: [ 'fs', 'gardens', 'zlib' ],
   plugins: [
-    typescript(),
-    minify({ comments: false })
+    typescript({
+      useTsconfigDeclarationDir: true
+    }),
+    minify({
+      comments: false
+    })
   ],
   output: {
     exports: 'named',

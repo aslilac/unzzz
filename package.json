@@ -2,18 +2,20 @@
   "name": "unzzz",
   "version": "0.9.0",
   "author": "McKayla Washburn",
-  "description": "Unzips .zip files",
+  "description": "A lightweight zip archive reader",
   "license": "MIT",
   "files": [
     "dist/*"
   ],
   "main": "dist/unzzz.js",
-  "types": "dist/unzzz.d.ts",
+  "types": "dist/types/lib/unzzz.d.ts",
   "repository": "partheseas/unzzz",
   "bugs": "https://github.com/partheseas/unzzz/issues",
   "keywords": [
     "zip",
-    "deflate"
+    "deflate",
+    "archive",
+    "typescript"
   ],
   "dependencies": {
     "gardens": "^4.1.2"
@@ -32,6 +34,6 @@
   },
   "scripts": {
     "now-build": "typedoc",
-    "test": "eslint --ext .ts lib && rollup -c && ava"
+    "test": "eslint --ext .js,.ts lib && rollup -c && ava"
   }
 }
