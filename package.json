@@ -13,10 +13,10 @@
   "repository": "partheseas/unzzz",
   "bugs": "https://github.com/partheseas/unzzz/issues",
   "keywords": [
-    "zip",
-    "deflate",
     "archive",
-    "typescript"
+    "deflate",
+    "typescript",
+    "zip"
   ],
   "dependencies": {
     "gardens": "^4.1.2"
