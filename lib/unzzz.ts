@@ -91,6 +91,12 @@ export class Unzzz {
       this.files[ cdl.fileName ] = cdl;
     }
 
+    garden.assert_eq(
+      eocd.sizeOfCentralDirectory,
+      reader.position - eocd.startOfCentralDirectory,
+      'Central Directory has an incorrect length'
+    );
+
     this.validateMap();
 
     return Promise.resolve( this );
@@ -106,7 +112,7 @@ export class Unzzz {
     garden.assert_eq(
       position,
       this.archiveBuffer.length,
-      'The zip buffer appears to contain empty space in it, which can be malicious.'
+      'The zip buffer appears to contain undocumented space in it, which can be malicious.'
     );
   }
 
@@ -128,13 +134,13 @@ export class Unzzz {
         garden.assert_eq(
           cdl.uncompressedSize,
           uncompressedData.length,
-          'Uncompressed data has incorrect length.'
+          'Uncompressed data has an incorrect length.'
         );
 
         garden.assert_eq(
           cdl.crc32,
           crc32( uncompressedData ),
-          'Uncompressed data has incorrect crc32 value.'
+          'Uncompressed data has an incorrect crc32 value.'
         );
 
         garden.debug( `crc32 and size verified for file ${name}` );

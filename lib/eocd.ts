@@ -48,7 +48,5 @@ export default class EndOfCentralDirectory implements Mappable {
     garden.assert_eq( this.diskNumber, 0 );
     garden.assert_eq( this.centralDirectoryStartDisk, 0 );
     garden.assert_eq( this.localListingCount, this.globalListingCount );
-    // Assert central directory is at start of disk
-    // garden.assert_eq( eocd.startOfCentralDirectory, 0 );
   }
 }
