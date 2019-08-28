@@ -1,4 +1,4 @@
-# Unzzz
+# unzzz
 ![package version](https://img.shields.io/badge/dynamic/json?color=f0606d&label=unzzz&prefix=v&query=%24%5B%27dist-tags%27%5D.latest&url=https%3A%2F%2Fregistry.npmjs.com%2Funzzz)
 ![stability](https://img.shields.io/badge/stability-release-66f29a.svg)
 [![build status](https://travis-ci.org/partheseas/unzzz.svg?branch=master)](https://travis-ci.org/partheseas/unzzz)
