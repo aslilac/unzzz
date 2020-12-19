@@ -38,8 +38,8 @@ export class Unzzz {
 	 * names of the keys.
 	 *
 	 * ```JavaScript
-	 * for ( const file in archive.files ) {
-	 *  const buffer = await archive.unzipBuffer( file );
+	 * for (const file in archive.files) {
+	 *  const buffer = await archive.unzipBuffer(file);
 	 *  // ...
 	 * }
 	 * ```
@@ -51,7 +51,7 @@ export class Unzzz {
 
 	/**
 	 * If you wish to add in a custom decompressor to support additional
-	 * compression methods, you can extend this object to do so. The index
+	 * compression methods, you can extend this object to do so. The key
 	 * should match the compressionMethod identifier as defined by
 	 * https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT in section 4.4.5.
 	 * The function should match the signature defined by the [[Decompressor]] type.
@@ -209,19 +209,19 @@ Unzzz.decompressors.set(
  * an actionable class that enables you to interact with the archive.
  *
  * ```JavaScript
- * import unzzz from 'unzzz';
+ * import unzzz from "unzzz";
  *
- * const archive = await unzzz( 'archive.zip' );
- * const uncompressedData = await archive.unzipBuffer( fileName );
+ * const archive = await unzzz("archive.zip");
+ * const uncompressedData = await archive.unzipBuffer(fileName);
  *
  * let i = 0;
- * for ( const name in archive.files ) {
+ * for (const name in archive.files) {
  *   // It's generally a bad idea to use the name given in the archive
  *   // when writting a file to disk. See notes on the unzipFile method
  *   // for details on why.
  *   // Something like this is a much better solution.
  *   // Files output: 1.js, 2.jpg, 3.html, etc.
- *   archive.unzipFile( name, `${i++}${path.extname( name )}` );
+ *   archive.unzipFile(name, `${i++}${path.extname(name)}`);
  * }
  * ```
  *
