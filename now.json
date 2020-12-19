@@ -1,18 +1,15 @@
 {
-  "name": "unzzz",
-  "version": 2,
-  "scope": "partheseas",
-  "alias": [
-    "unzzz",
-    "unzzz.now.mckay.la"
-  ],
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@now/static-build",
-      "config": {
-        "distDir": "doc"
-      }
-    }
-  ]
+	"name": "unzzz",
+	"version": 2,
+	"scope": "partheseas",
+	"alias": ["unzzz", "unzzz.now.mckay.la"],
+	"builds": [
+		{
+			"src": "package.json",
+			"use": "@now/static-build",
+			"config": {
+				"distDir": "doc"
+			}
+		}
+	]
 }

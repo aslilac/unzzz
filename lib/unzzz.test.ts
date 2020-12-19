@@ -1,7 +1,13 @@
-import test from "ava";
-import unzzz from "..";
+import unzzz from "./unzzz";
 
-function mock(...files) {
+interface MockFile {
+	fileName: string;
+	descriptor?: boolean;
+	descriptorSignature?: boolean;
+	_fileHeaderOffset?: number; // filled in by mock
+}
+
+function mock(...files: MockFile[]) {
 	let position = 0;
 
 	// Create local headers
@@ -64,7 +70,7 @@ function mock(...files) {
 				...(details.descriptor ? descriptor : []),
 			]);
 
-			details.fileHeaderOffset = position;
+			details._fileHeaderOffset = position;
 			position += lh.length;
 
 			return lh;
@@ -75,7 +81,7 @@ function mock(...files) {
 	const cd = Buffer.concat(
 		files.map((details) => {
 			const offset = Buffer.alloc(4);
-			offset.writeUInt32LE(details.fileHeaderOffset);
+			offset.writeUInt32LE(details._fileHeaderOffset);
 
 			const cdl = Buffer.from([
 				// CentralDirectoryListing
@@ -122,7 +128,7 @@ function mock(...files) {
 				0,
 				0,
 				0, // externalAttributes
-				...offset, // fileHeaderOffset
+				...offset, // _fileHeaderOffset
 				...Buffer.from(details.fileName), // fileName
 				// extra
 				// comment
@@ -160,7 +166,7 @@ function mock(...files) {
 	return Buffer.concat([l, cd, eocd]);
 }
 
-test("Mocked archive is parsed properly", async (t) => {
+test("Mocked archive is parsed properly", async () => {
 	const sample = mock(
 		{
 			fileName: "a",
@@ -177,5 +183,5 @@ test("Mocked archive is parsed properly", async (t) => {
 	);
 
 	const archive = await unzzz(sample);
-	t.deepEqual(Object.keys(archive.files), ["a", "b", "c"]);
+	expect(Object.keys(archive.files)).toContainEqual(["a", "b", "c"]);
 });

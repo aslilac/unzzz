@@ -1,18 +1,20 @@
 {
-  "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "declaration": true,
-    "declarationDir": "dist/types",
-    "moduleResolution": "node",
-    "outDir": "dist",
-    "target": "esnext"
-  },
-  "typedocOptions": {
-    "excludeNotExported": true,
-    "ignoreCompilerErrors": true,
-    "mode": "file",
-    "out": "doc",
-    "readme": "none",
-    "theme": "minimal"
-  }
+	"compilerOptions": {
+		"declaration": true,
+		"declarationDir": "target/types",
+		"esModuleInterop": true,
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"outDir": "target",
+		"target": "esnext"
+	},
+	"typedocOptions": {
+		"excludeNotExported": true,
+		"ignoreCompilerErrors": true,
+		"mode": "file",
+		"out": "doc",
+		"readme": "none",
+		"theme": "minimal"
+	},
+	"include": ["lib/**/*"]
 }
