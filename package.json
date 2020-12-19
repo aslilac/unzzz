@@ -33,8 +33,9 @@
 	"scripts": {
 		"build": "tsc -p .",
 		"fmt": "prettier --ignore-path .gitignore --write .",
+		"lint": "eslint lib",
 		"now-build": "typedoc",
-		"test": "eslint lib && jest",
+		"test": "jest",
 		"type-check": "tsc -p . --noEmit"
 	}
 }
