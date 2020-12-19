@@ -81,7 +81,9 @@ function mock(...files: MockFile[]) {
 	const cd = Buffer.concat(
 		files.map((details) => {
 			const offset = Buffer.alloc(4);
-			offset.writeUInt32LE(details._fileHeaderOffset);
+			if (details._fileHeaderOffset) {
+				offset.writeUInt32LE(details._fileHeaderOffset);
+			}
 
 			const cdl = Buffer.from([
 				// CentralDirectoryListing
