@@ -7,10 +7,8 @@ logs
 npm-debug.log*
 
 # Builds
-.rpt2_cache
-dist
 doc
+target
 
 # Dependencies
 node_modules
-.pnp
