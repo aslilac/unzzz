@@ -1,0 +1,7 @@
+{
+	"extends": ["plugin:@mckayla/ts"],
+	"rules": {
+		"@typescript-eslint/restrict-template-expressions": "off",
+		"@typescript-eslint/strict-boolean-expressions": "off"
+	}
+}

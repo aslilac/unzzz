@@ -10,7 +10,7 @@ for (let i = 0; i < lookup.length; i++) {
 	lookup[i] = crc;
 }
 
-export default function crc32(data: Buffer | Uint8Array | number[]) {
+export default function crc32(data: Buffer | Uint8Array | number[]): number {
 	const input = Uint8Array.from(data);
 
 	return ~input.reduce(

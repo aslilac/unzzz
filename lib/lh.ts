@@ -1,9 +1,8 @@
-import logger from "./base/log";
+import assert from "assert";
+
 import Reader from "./base/reader";
 import Mappable from "./types/mappable";
 import CentralDirectoryListing from "./cdl";
-
-const log = logger.scope("lh");
 
 const LOCAL_HEADER = Buffer.from([0x50, 0x4b, 0x03, 0x04]);
 const LOCAL_HEADER_DESCRIPTOR = Buffer.from([0x50, 0x4b, 0x07, 0x08]);
@@ -12,7 +11,7 @@ export interface Descriptor extends Mappable {
 	_begin: number;
 	_end: number;
 
-	signature: Buffer;
+	signature: Buffer | null;
 	crc32: number;
 	compressedSize: number;
 	uncompressedSize: number;
@@ -39,34 +38,30 @@ export default class LocalHeader implements Mappable {
 	startOfCompressedFile: number;
 	endOfCompressedFile: number;
 
-	descriptor: Descriptor;
+	descriptor?: Descriptor;
 
 	constructor(reader: Reader, cdl: CentralDirectoryListing) {
 		// Assert that the signature is correct
-		log.assert(
+		assert(
 			reader.peek(4).equals(LOCAL_HEADER),
 			"LocalHeader received reader at an invalid position",
 		);
 
-		Object.assign(this, {
-			_begin: reader.position,
-			signature: reader.readRaw(4),
-			versionNeeded: reader.readLittleEndian(2),
-			bitFlag: reader.readLittleEndian(2),
-			compressionMethod: reader.readLittleEndian(2),
-			modifiedTime: reader.readLittleEndian(2),
-			modifiedDate: reader.readLittleEndian(2),
-			crc32: reader.readSignedLittleEndian(4),
-			compressedSize: reader.readLittleEndian(4),
-			uncompressedSize: reader.readLittleEndian(4),
-			fileNameLength: reader.readLittleEndian(2),
-			extraLength: reader.readLittleEndian(2),
-		});
+		this._begin = reader.position;
+		this.signature = reader.readRaw(4);
+		this.versionNeeded = reader.readLittleEndian(2);
+		this.bitFlag = reader.readLittleEndian(2);
+		this.compressionMethod = reader.readLittleEndian(2);
+		this.modifiedTime = reader.readLittleEndian(2);
+		this.modifiedDate = reader.readLittleEndian(2);
+		this.crc32 = reader.readSignedLittleEndian(4);
+		this.compressedSize = reader.readLittleEndian(4);
+		this.uncompressedSize = reader.readLittleEndian(4);
+		this.fileNameLength = reader.readLittleEndian(2);
+		this.extraLength = reader.readLittleEndian(2);
 
-		Object.assign(this, {
-			fileName: reader.readString(this.fileNameLength),
-			extra: reader.readRaw(this.extraLength),
-		});
+		this.fileName = reader.readString(this.fileNameLength);
+		this.extra = reader.readRaw(this.extraLength);
 
 		// Store the beginning and ending positions of the compressed data
 		this.startOfCompressedFile = reader.position;
@@ -78,9 +73,9 @@ export default class LocalHeader implements Mappable {
 		// Check if this file has a data descriptor after the compressed data
 		if (this.bitFlag & 8) {
 			// These should all be zero if there is a descriptor
-			log.assert_eq(this.crc32, 0);
-			log.assert_eq(this.compressedSize, 0);
-			log.assert_eq(this.uncompressedSize, 0);
+			assert.strictEqual(this.crc32, 0);
+			assert.strictEqual(this.compressedSize, 0);
+			assert.strictEqual(this.uncompressedSize, 0);
 
 			this.descriptor = {
 				_begin: this.endOfCompressedFile,

@@ -1,9 +1,8 @@
+import assert from "assert";
+
 import Reader from "./base/reader";
 import Mappable from "./types/mappable";
 import { END_OF_CENTRAL_DIRECTORY } from "./types/signatures";
-
-import logger from "./base/log";
-const log = logger.scope("eocd");
 
 export default class EndOfCentralDirectory implements Mappable {
 	_begin: number;
@@ -21,31 +20,27 @@ export default class EndOfCentralDirectory implements Mappable {
 
 	constructor(reader: Reader) {
 		// Assert that the signature is correct
-		log.assert(
+		assert(
 			reader.peek(4).equals(END_OF_CENTRAL_DIRECTORY),
 			"EndOfCentralDirectory received reader at an invalid position",
 		);
 
-		Object.assign(this, {
-			_begin: reader.position,
-			signature: reader.readRaw(4),
-			diskNumber: reader.readLittleEndian(2),
-			centralDirectoryStartDisk: reader.readLittleEndian(2),
-			localListingCount: reader.readLittleEndian(2),
-			globalListingCount: reader.readLittleEndian(2),
-			sizeOfCentralDirectory: reader.readLittleEndian(4),
-			startOfCentralDirectory: reader.readLittleEndian(4),
-			commentLength: reader.readLittleEndian(2),
-		});
+		this._begin = reader.position;
+		this.signature = reader.readRaw(4);
+		this.diskNumber = reader.readLittleEndian(2);
+		this.centralDirectoryStartDisk = reader.readLittleEndian(2);
+		this.localListingCount = reader.readLittleEndian(2);
+		this.globalListingCount = reader.readLittleEndian(2);
+		this.sizeOfCentralDirectory = reader.readLittleEndian(4);
+		this.startOfCentralDirectory = reader.readLittleEndian(4);
+		this.commentLength = reader.readLittleEndian(2);
 
-		Object.assign(this, {
-			comment: reader.readRaw(this.commentLength),
-			_end: reader.position,
-		});
+		this.comment = reader.readRaw(this.commentLength);
+		this._end = reader.position;
 
 		// Assert that there is only one disk
-		log.assert_eq(this.diskNumber, 0);
-		log.assert_eq(this.centralDirectoryStartDisk, 0);
-		log.assert_eq(this.localListingCount, this.globalListingCount);
+		assert.strictEqual(this.diskNumber, 0);
+		assert.strictEqual(this.centralDirectoryStartDisk, 0);
+		assert.strictEqual(this.localListingCount, this.globalListingCount);
 	}
 }

@@ -6,6 +6,7 @@
 		"module": "commonjs",
 		"moduleResolution": "node",
 		"outDir": "target",
+		"strict": true,
 		"target": "esnext"
 	},
 	"typedocOptions": {

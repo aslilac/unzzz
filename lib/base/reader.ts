@@ -5,11 +5,11 @@ export default class BufferReader {
 		this.currentBuffer = buffer;
 	}
 
-	clone(position = this._position) {
+	clone(position = this._position): BufferReader {
 		return new BufferReader(this.currentBuffer, position);
 	}
 
-	findNext(data: Buffer) {
+	findNext(data: Buffer): boolean {
 		const foundAt = this.currentBuffer.slice(this.position).indexOf(data);
 
 		if (~foundAt) {
@@ -20,7 +20,7 @@ export default class BufferReader {
 		return false;
 	}
 
-	moveTo(position: number) {
+	moveTo(position: number): void {
 		// Using min and max bounds the position to within the buffer.
 		this._position = Math.max(
 			0,
@@ -28,37 +28,37 @@ export default class BufferReader {
 		);
 	}
 
-	moveBy(position: number) {
+	moveBy(position: number): void {
 		this.moveTo(this._position + position);
 	}
 
-	get position() {
+	get position(): number {
 		return this._position;
 	}
 
-	peek(length: number) {
+	peek(length: number): Buffer {
 		return this.currentBuffer.slice(this.position, this.position + length);
 	}
 
-	readRaw(length: number) {
+	readRaw(length: number): Buffer {
 		const value = this.peek(length);
 		this._position += length;
 		return value;
 	}
 
-	readSignedLittleEndian(length: number) {
+	readSignedLittleEndian(length: number): number {
 		const le = this.currentBuffer.readIntLE(this.position, length);
 		this._position += length;
 		return le;
 	}
 
-	readLittleEndian(length: number) {
+	readLittleEndian(length: number): number {
 		const le = this.currentBuffer.readUIntLE(this.position, length);
 		this._position += length;
 		return le;
 	}
 
-	readString(length: number, encoding: BufferEncoding = "utf-8") {
+	readString(length: number, encoding: BufferEncoding = "utf-8"): string {
 		return this.readRaw(length).toString(encoding);
 	}
 }

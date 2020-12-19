@@ -1,24 +1,15 @@
+import assert from "assert";
 import { promises as fs } from "fs";
 import zlib from "zlib";
 
 import Reader from "./base/reader";
 import crc32 from "./base/crc";
-import logger from "./base/log";
+import { END_OF_CENTRAL_DIRECTORY } from "./types/signatures";
 import CentralDirectoryListing from "./cdl";
 import EndOfCentralDirectory from "./eocd";
-import LocalHeader from "./lh";
 
-const log = logger.scope();
-
-const END_OF_CENTRAL_DIRECTORY = Buffer.from([0x50, 0x4b, 0x05, 0x06]);
-
-export interface ArchiveFiles {
-	[name: string]: CentralDirectoryListing;
-}
-
-interface BufferMap {
-	[entry: number]: number;
-}
+export type ArchiveFiles = Record<string, CentralDirectoryListing>;
+export type BufferMap = Record<number, number>;
 
 /**
  * **Notice:** Not to be used for directly decompressing archives. For that, use
@@ -56,7 +47,7 @@ export class Unzzz {
 	readonly files: ArchiveFiles = {};
 
 	private map: BufferMap = {};
-	private archiveBuffer: Buffer;
+	private archiveBuffer: Buffer | null = null;
 
 	/**
 	 * If you wish to add in a custom decompressor to support additional
@@ -65,7 +56,7 @@ export class Unzzz {
 	 * https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT in section 4.4.5.
 	 * The function should match the signature defined by the [[Decompressor]] type.
 	 */
-	static decompressors: Map<number, Decompressor> = new Map();
+	static decompressors = new Map<number, Decompressor>();
 
 	async readFromFile(archivePath: string): Promise<this> {
 		const archiveBuffer = await fs.readFile(archivePath);
@@ -94,7 +85,7 @@ export class Unzzz {
 			this.files[cdl.fileName] = cdl;
 		}
 
-		log.assert_eq(
+		assert.strictEqual(
 			eocd.sizeOfCentralDirectory,
 			reader.position - eocd.startOfCentralDirectory,
 			"Central Directory has an incorrect length",
@@ -106,25 +97,36 @@ export class Unzzz {
 	}
 
 	private validateMap() {
+		if (!this.archiveBuffer) {
+			throw new ReferenceError(
+				"Attempted to validate an uninitialized buffer",
+			);
+		}
+
 		// This checks to make sure that all the data in the file is accounted for.
 		// If there is unnecessary data in the file, that raises a red flag in my eyes.
 		// Every block should end at either the beginning of the next block or the end
 		// of the file.
 		let position = 0;
 		while (this.map[position]) position = this.map[position];
-		log.assert_eq(
+		assert.strictEqual(
 			position,
 			this.archiveBuffer.length,
 			"The zip buffer appears to contain undocumented space in it, which can be malicious.",
 		);
 	}
 
-	async unzipBuffer(name: string): Promise<Buffer> {
-		const cdl: CentralDirectoryListing = this.files[name];
+	async unzipBuffer(name: string): Promise<Buffer | null> {
+		if (!this.archiveBuffer) {
+			throw new ReferenceError(
+				"Attempted to read from an uninitialized buffer",
+			);
+		}
 
+		const cdl: CentralDirectoryListing = this.files[name];
 		if (!cdl) return null;
 
-		const decompressor = Unzzz.decompressors[cdl.compressionMethod];
+		const decompressor = Unzzz.decompressors.get(cdl.compressionMethod);
 		const compressedData = this.archiveBuffer.slice(
 			cdl.localHeader.startOfCompressedFile,
 			cdl.localHeader.endOfCompressedFile,
@@ -137,30 +139,28 @@ export class Unzzz {
 			);
 
 			if (Buffer.isBuffer(uncompressedData)) {
-				log.assert_eq(
+				assert.strictEqual(
 					cdl.uncompressedSize,
 					uncompressedData.length,
 					"Uncompressed data has an incorrect length.",
 				);
 
-				log.assert_eq(
+				assert.strictEqual(
 					cdl.crc32,
 					crc32(uncompressedData),
 					"Uncompressed data has an incorrect crc32 value.",
 				);
 
-				log.debug(`crc32 and size verified for file ${name}`);
-
 				return uncompressedData;
 			}
 
-			throw log.typeerror(
+			throw new TypeError(
 				`Invalid decompression for compressionMethod ${cdl.compressionMethod}!`,
 			);
 		}
 
 		// If we make it here and haven't returned a buffer, then the decompressor
-		throw log.error(
+		throw new Error(
 			`No decompressor available for compressionMethod ${cdl.compressionMethod}!`,
 		);
 	}
@@ -176,6 +176,11 @@ export class Unzzz {
 	 */
 	async unzipFile(name: string, destination: string): Promise<void> {
 		const uncompressedData = await this.unzipBuffer(name);
+
+		if (!uncompressedData) {
+			throw new ReferenceError(`No file "${name}" in archive to extract`);
+		}
+
 		return fs.writeFile(destination, uncompressedData);
 	}
 }
@@ -198,14 +203,6 @@ Unzzz.decompressors.set(
 			});
 		}),
 );
-
-export {
-	EndOfCentralDirectory,
-	CentralDirectoryListing,
-	LocalHeader,
-	Reader,
-	crc32,
-};
 
 /**
  * This function returns a promise which will fulfill with an [[Unzzz]],
@@ -234,7 +231,11 @@ export {
 export default function unzzz(source: Buffer | string): Promise<Unzzz> {
 	const archive = new Unzzz();
 
-	return Buffer.isBuffer(source)
-		? archive.readFromBuffer(source)
-		: archive.readFromFile(source);
+	if (Buffer.isBuffer(source)) {
+		return archive.readFromBuffer(source);
+	} else if (typeof source === "string") {
+		return archive.readFromFile(source);
+	} else {
+		throw new TypeError(`Received invalid source: ${source}`);
+	}
 }

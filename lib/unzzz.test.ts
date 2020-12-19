@@ -183,5 +183,5 @@ test("Mocked archive is parsed properly", async () => {
 	);
 
 	const archive = await unzzz(sample);
-	expect(Object.keys(archive.files)).toContainEqual(["a", "b", "c"]);
+	expect(Object.keys(archive.files)).toEqual(["a", "b", "c"]);
 });
