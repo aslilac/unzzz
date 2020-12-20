@@ -1,7 +1,6 @@
 {
 	"compilerOptions": {
 		"declaration": true,
-		"declarationDir": "target/types",
 		"esModuleInterop": true,
 		"module": "commonjs",
 		"moduleResolution": "node",

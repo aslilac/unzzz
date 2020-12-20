@@ -4,11 +4,8 @@
 	"author": "McKayla Washburn",
 	"description": "A lightweight zip archive reader",
 	"license": "MIT",
-	"files": [
-		"target/*"
-	],
 	"main": "target/unzzz.js",
-	"types": "target/types/unzzz.d.ts",
+	"types": "target/unzzz.d.ts",
 	"homepage": "https://unzzz.now.sh",
 	"repository": "partheseas/unzzz",
 	"bugs": "https://github.com/partheseas/unzzz/issues",
