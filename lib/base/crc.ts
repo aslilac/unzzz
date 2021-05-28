@@ -14,7 +14,7 @@ export default function crc32(data: Buffer | Uint8Array | number[]): number {
 	const input = Uint8Array.from(data);
 
 	return ~input.reduce(
-		(crc, byte) => lookup[(crc ^ byte) & 0xff] ^ (crc >>> 8),
+		(crc, byte) => lookup[(crc ^ byte) & 0xff]! ^ (crc >>> 8),
 		0xffffffff,
 	);
 }

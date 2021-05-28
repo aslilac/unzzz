@@ -64,20 +64,14 @@ export default class CentralDirectoryListing implements Mappable {
 		this._end = reader.position;
 
 		// Parse the corresponding local header
-		this.localHeader = new LocalHeader(
-			reader.clone(this.fileHeaderOffset),
-			this,
-		);
+		this.localHeader = new LocalHeader(reader.clone(this.fileHeaderOffset), this);
 
 		// If the compressionMethod is "stored" then the sizes should be equal
 		if (this.compressionMethod === 0) {
 			assert.strictEqual(this.compressedSize, this.uncompressedSize);
 		}
 		// Assert that information matches in both listings
-		assert.strictEqual(
-			this.compressionMethod,
-			this.localHeader.compressionMethod,
-		);
+		assert.strictEqual(this.compressionMethod, this.localHeader.compressionMethod);
 		assert.strictEqual(this.modifiedTime, this.localHeader.modifiedTime);
 		assert.strictEqual(this.modifiedDate, this.localHeader.modifiedDate);
 		assert.strictEqual(this.fileName, this.localHeader.fileName);
@@ -100,14 +94,8 @@ export default class CentralDirectoryListing implements Mappable {
 			);
 		} else {
 			assert.strictEqual(this.crc32, this.localHeader.crc32);
-			assert.strictEqual(
-				this.compressedSize,
-				this.localHeader.compressedSize,
-			);
-			assert.strictEqual(
-				this.uncompressedSize,
-				this.localHeader.uncompressedSize,
-			);
+			assert.strictEqual(this.compressedSize, this.localHeader.compressedSize);
+			assert.strictEqual(this.uncompressedSize, this.localHeader.uncompressedSize);
 		}
 	}
 }

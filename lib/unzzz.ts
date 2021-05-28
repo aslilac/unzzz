@@ -8,7 +8,8 @@ import { END_OF_CENTRAL_DIRECTORY } from "./types/signatures";
 import CentralDirectoryListing from "./cdl";
 import EndOfCentralDirectory from "./eocd";
 
-export type ArchiveFiles = Record<string, CentralDirectoryListing>;
+// export type ArchiveFiles = Record<string, CentralDirectoryListing>;
+export type ArchiveFiles = Map<string, CentralDirectoryListing>;
 export type BufferMap = Record<number, number>;
 
 /**
@@ -30,7 +31,7 @@ export type Decompressor = (
 
 export class Unzzz {
 	/**
-	 * An object which maps the name of a file in the archive to some interal
+	 * A map which relates the name of a file in the archive to some interal
 	 * details used to extract the file. If you wish to iterate over all of the
 	 * items in an archive, this provides an easy way to do it.
 	 *
@@ -44,7 +45,7 @@ export class Unzzz {
 	 * }
 	 * ```
 	 */
-	readonly files: ArchiveFiles = {};
+	readonly files: ArchiveFiles = new Map();
 
 	private map: BufferMap = {};
 	private archiveBuffer: Buffer | null = null;
@@ -82,7 +83,7 @@ export class Unzzz {
 			this.map[cdl._begin] = cdl._end;
 			this.map[cdl.localHeader._begin] = cdl.localHeader._end;
 			// Normalize the file names so that no one can be nefarious.
-			this.files[cdl.fileName] = cdl;
+			this.files.set(cdl.fileName, cdl);
 		}
 
 		assert.strictEqual(
@@ -98,9 +99,7 @@ export class Unzzz {
 
 	private validateMap() {
 		if (!this.archiveBuffer) {
-			throw new ReferenceError(
-				"Attempted to validate an uninitialized buffer",
-			);
+			throw new ReferenceError("Attempted to validate an uninitialized buffer");
 		}
 
 		// This checks to make sure that all the data in the file is accounted for.
@@ -108,7 +107,7 @@ export class Unzzz {
 		// Every block should end at either the beginning of the next block or the end
 		// of the file.
 		let position = 0;
-		while (this.map[position]) position = this.map[position];
+		while (this.map[position]) position = this.map[position]!;
 		assert.strictEqual(
 			position,
 			this.archiveBuffer.length,
@@ -118,12 +117,10 @@ export class Unzzz {
 
 	async unzipBuffer(name: string): Promise<Buffer | null> {
 		if (!this.archiveBuffer) {
-			throw new ReferenceError(
-				"Attempted to read from an uninitialized buffer",
-			);
+			throw new ReferenceError("Attempted to read from an uninitialized buffer");
 		}
 
-		const cdl: CentralDirectoryListing = this.files[name];
+		const cdl = this.files.get(name);
 		if (!cdl) return null;
 
 		const decompressor = Unzzz.decompressors.get(cdl.compressionMethod);
@@ -133,10 +130,7 @@ export class Unzzz {
 		);
 
 		if (typeof decompressor === "function") {
-			const uncompressedData: Buffer = await decompressor(
-				compressedData,
-				cdl,
-			);
+			const uncompressedData: Buffer = await decompressor(compressedData, cdl);
 
 			if (Buffer.isBuffer(uncompressedData)) {
 				assert.strictEqual(

@@ -22,10 +22,7 @@ export default class BufferReader {
 
 	moveTo(position: number): void {
 		// Using min and max bounds the position to within the buffer.
-		this._position = Math.max(
-			0,
-			Math.min(position, this.currentBuffer.length - 1),
-		);
+		this._position = Math.max(0, Math.min(position, this.currentBuffer.length - 1));
 	}
 
 	moveBy(position: number): void {

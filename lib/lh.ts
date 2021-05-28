@@ -91,8 +91,6 @@ export default class LocalHeader implements Mappable {
 
 		// We lump the compressed data (and optional descriptor) in with the
 		// local header so that it is easier to account for in our map validation.
-		this._end = this.descriptor
-			? this.descriptor._end
-			: this.endOfCompressedFile;
+		this._end = this.descriptor ? this.descriptor._end : this.endOfCompressedFile;
 	}
 }

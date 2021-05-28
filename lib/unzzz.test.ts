@@ -64,9 +64,7 @@ function mock(...files: MockFile[]) {
 				...Buffer.from(details.fileName), // fileName
 				// extra
 				...Buffer.alloc(5),
-				...(details.descriptorSignature
-					? [0x50, 0x4b, 0x07, 0x08]
-					: []),
+				...(details.descriptorSignature ? [0x50, 0x4b, 0x07, 0x08] : []),
 				...(details.descriptor ? descriptor : []),
 			]);
 

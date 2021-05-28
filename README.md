@@ -18,35 +18,21 @@ a few lines of code! Details can be found in the documentation.
 
 ## Installation
 
-```Shell
-yarn add unzzz
+```shell
+npm add unzzz
 ```
 
 ## Usage
 
 -   [Documentation](https://unzzz.now.sh)
 
-```JavaScript
+```javascript
 import unzzz from "unzzz";
 
-unzzz(pathToArchive)
-  .then((archive) => {
-    // Iterate over all the files in the archive
-    for (const each in archive.files) {
-      // Retrieve a decompressed buffer of the file
-      archive.unzipBuffer(each)
-        .then((buffer) => console.log(buffer));
-    }
+const archive = await unzzz(pathToArchive);
 
-    // Pull out specific files and save the uncompressed files to storage
-    archive.unzipFile('dir/filename.ext', destination);
-  });
-```
-
-**Notice:** When using CommonJS to import this module, you will need to import
-the "default" property. This is not necessary when using a tool like TypeScript,
-Webpack, Parcel, or Rollup.
-
-```JavaScript
-const unzzz = require("unzzz").default;
+for (const file of archive.files.keys()) {
+	// Retrieve a decompressed buffer of the file
+	console.log(await archive.unzipBuffer(file));
+}
 ```

@@ -1,12 +1,8 @@
 {
+	"extends": "@mckayla/tsconfig",
 	"compilerOptions": {
-		"declaration": true,
-		"esModuleInterop": true,
 		"module": "commonjs",
-		"moduleResolution": "node",
-		"outDir": "target",
-		"strict": true,
-		"target": "esnext"
+		"outDir": "./target"
 	},
 	"typedocOptions": {
 		"excludeNotExported": true,
