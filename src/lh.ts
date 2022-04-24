@@ -1,17 +1,16 @@
-import assert from "assert";
-
-import Reader from "./base/reader";
-import Mappable from "./types/mappable";
-import CentralDirectoryListing from "./cdl";
-
-const LOCAL_HEADER = Buffer.from([0x50, 0x4b, 0x03, 0x04]);
-const LOCAL_HEADER_DESCRIPTOR = Buffer.from([0x50, 0x4b, 0x07, 0x08]);
+import {
+	ArchiveReader,
+	assert,
+	LOCAL_HEADER,
+	LOCAL_HEADER_DESCRIPTOR,
+	Mappable,
+} from "./base";
 
 export interface Descriptor extends Mappable {
 	_begin: number;
 	_end: number;
 
-	signature: Buffer | null;
+	signature: Uint8Array | null;
 	crc32: number;
 	compressedSize: number;
 	uncompressedSize: number;
@@ -21,7 +20,7 @@ export default class LocalHeader implements Mappable {
 	_begin: number;
 	_end: number;
 
-	signature: Buffer;
+	signature: Uint8Array;
 	versionNeeded: number;
 	bitFlag: number;
 	compressionMethod: number;
@@ -33,41 +32,36 @@ export default class LocalHeader implements Mappable {
 	fileNameLength: number;
 	extraLength: number;
 	fileName: string;
-	extra: Buffer;
+	extra: Uint8Array;
 
 	startOfCompressedFile: number;
 	endOfCompressedFile: number;
 
 	descriptor?: Descriptor;
 
-	constructor(reader: Reader, cdl: CentralDirectoryListing) {
-		// Assert that the signature is correct
-		assert(
-			reader.peek(4).equals(LOCAL_HEADER),
-			"LocalHeader received reader at an invalid position",
-		);
-
+	constructor(reader: ArchiveReader, compressedDataSize: number) {
 		this._begin = reader.position;
-		this.signature = reader.readRaw(4);
-		this.versionNeeded = reader.readLittleEndian(2);
-		this.bitFlag = reader.readLittleEndian(2);
-		this.compressionMethod = reader.readLittleEndian(2);
-		this.modifiedTime = reader.readLittleEndian(2);
-		this.modifiedDate = reader.readLittleEndian(2);
-		this.crc32 = reader.readSignedLittleEndian(4);
-		this.compressedSize = reader.readLittleEndian(4);
-		this.uncompressedSize = reader.readLittleEndian(4);
-		this.fileNameLength = reader.readLittleEndian(2);
-		this.extraLength = reader.readLittleEndian(2);
+		// Assert that the signature is correct
+		this.signature = reader.expect(LOCAL_HEADER);
+		this.versionNeeded = reader.readUint(2);
+		this.bitFlag = reader.readUint(2);
+		this.compressionMethod = reader.readUint(2);
+		this.modifiedTime = reader.readUint(2);
+		this.modifiedDate = reader.readUint(2);
+		this.crc32 = reader.readInt(4);
+		this.compressedSize = reader.readUint(4);
+		this.uncompressedSize = reader.readUint(4);
+		this.fileNameLength = reader.readUint(2);
+		this.extraLength = reader.readUint(2);
 
 		this.fileName = reader.readString(this.fileNameLength);
-		this.extra = reader.readRaw(this.extraLength);
+		this.extra = reader.read(this.extraLength);
 
 		// Store the beginning and ending positions of the compressed data
 		this.startOfCompressedFile = reader.position;
 		// We read `compressedSize` from `cdl` instead of `this` because local
 		// headers are not guarenteed to have it, but the central directory is.
-		reader.moveBy(cdl.compressedSize);
+		reader.moveBy(compressedDataSize);
 		this.endOfCompressedFile = reader.position;
 
 		// Check if this file has a data descriptor after the compressed data
@@ -79,12 +73,10 @@ export default class LocalHeader implements Mappable {
 
 			this.descriptor = {
 				_begin: this.endOfCompressedFile,
-				signature: reader.peek(4).equals(LOCAL_HEADER_DESCRIPTOR)
-					? reader.readRaw(4)
-					: null,
-				crc32: reader.readLittleEndian(4),
-				compressedSize: reader.readLittleEndian(4),
-				uncompressedSize: reader.readLittleEndian(4),
+				signature: reader.expectMaybe(LOCAL_HEADER_DESCRIPTOR),
+				crc32: reader.readUint(4),
+				compressedSize: reader.readUint(4),
+				uncompressedSize: reader.readUint(4),
 				_end: reader.position,
 			};
 		}

@@ -2,7 +2,9 @@
 	"extends": "@mckayla/tsconfig",
 	"compilerOptions": {
 		"module": "commonjs",
-		"outDir": "./target"
+		"outDir": "./build/",
+		"lib": ["dom"],
+		"types": ["node"]
 	},
 	"typedocOptions": {
 		"excludeNotExported": true,
@@ -12,5 +14,5 @@
 		"readme": "none",
 		"theme": "minimal"
 	},
-	"include": ["lib/**/*"]
+	"include": ["./src/**/*"]
 }

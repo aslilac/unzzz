@@ -1,3 +1,4 @@
+/// <reference types="jest" />
 import unzzz from "./unzzz";
 
 interface MockFile {
@@ -163,7 +164,16 @@ function mock(...files: MockFile[]) {
 		// comment
 	]);
 
-	return Buffer.concat([l, cd, eocd]);
+	const b = Buffer.concat([l, cd, eocd]);
+
+	// Can't just use the backing buffer, we have to copy it out 🙃
+	const x = new ArrayBuffer(b.length);
+	const xView = new Uint8Array(x);
+	for (let i = 0; i < b.length; i++) {
+		xView[i] = b[i]!;
+	}
+
+	return x;
 }
 
 test("Mocked archive is parsed properly", async () => {
@@ -182,6 +192,6 @@ test("Mocked archive is parsed properly", async () => {
 		},
 	);
 
-	const archive = await unzzz(sample);
-	expect(Array.from(archive.files.keys())).toEqual(["a", "b", "c"]);
+	const archive = unzzz(sample);
+	expect(Array.from(archive)).toEqual(["a", "b", "c"]);
 });

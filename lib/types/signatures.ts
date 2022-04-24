@@ -1,2 +1,0 @@
-export const CENTRAL_DIRECTORY_LISTING = Buffer.from([0x50, 0x4b, 0x01, 0x02]);
-export const END_OF_CENTRAL_DIRECTORY = Buffer.from([0x50, 0x4b, 0x05, 0x06]);

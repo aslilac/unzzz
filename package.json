@@ -1,13 +1,8 @@
 {
 	"name": "unzzz",
-	"version": "0.11.0",
-	"author": "McKayla Washburn",
+	"version": "1.0.0",
+	"author": "McKayla Washburn <mckayla@hey.com>",
 	"description": "A lightweight zip archive reader",
-	"license": "MIT",
-	"main": "target/unzzz.js",
-	"types": "target/unzzz.d.ts",
-	"homepage": "https://unzzz.now.sh",
-	"repository": "https://github.com/partheseas/unzzz",
 	"keywords": [
 		"archive",
 		"deflate",
@@ -15,27 +10,44 @@
 		"typescript",
 		"zip"
 	],
+	"license": "MIT",
+	"homepage": "https://github.com/aslilac/unzzz",
+	"repository": "https://github.com/aslilac/unzzz",
+	"bugs": "https://github.com/aslilac/unzzz/issues",
+	"type": "commonjs",
+	"main": "./build/index.js",
+	"module": "./build/module/index.js",
+	"types": "./build/index.d.ts",
+	"exports": {
+		"require": "./build/index.js",
+		"import": "./build/module/index.js"
+	},
+	"bin": {},
 	"files": [
-		"target/**/*.{d.ts,js}"
+		"build/**"
 	],
 	"devDependencies": {
-		"@mckayla/eslint-plugin": "^0.1.10",
-		"@mckayla/prettier": "^2.0.0",
-		"@mckayla/tsconfig": "^4.3.0",
-		"@types/jest": "^26.0.23",
-		"@types/node": "^15.6.1",
-		"eslint": "^7.27.0",
-		"jest": "^27.0.1",
-		"prettier": "^2.3.0",
-		"ts-jest": "^27.0.1",
-		"typedoc": "^0.20.36",
-		"typescript": "^4.3.2"
+		"@mckayla/prettier": "^1.0.1",
+		"@mckayla/tsconfig": "^1.0.2",
+		"@types/jest": "^27.0.3",
+		"@types/node": "^17.0.24",
+		"eslint": "^8.13.0",
+		"eslint-config-mckayla": "^1.0.4",
+		"prettier": "^2.6.2",
+		"jest": "^27.5.1",
+		"ts-jest": "^27.1.4",
+		"typedoc": "^0.22.15",
+		"typescript": "^4.6.3"
 	},
 	"scripts": {
-		"build": "tsc -p tsconfig.build.json",
-		"fmt": "prettier --ignore-path .gitignore --write .",
+		"build": "npm run build:cjs -s && npm run build:esm -s",
+		"build:cjs": "tsc -p tsconfig.build.json --module commonjs --declaration",
+		"build:esm": "tsc -p tsconfig.build.json --module esnext --outdir ./build/module/",
+		"dev": "tsc -p tsconfig.build.json -w",
+		"fmt": "prettier --write .",
 		"lint": "eslint .",
 		"now-build": "typedoc",
+		"prepack": "npm run build -s",
 		"test": "jest",
 		"type-check": "tsc -p . --noEmit"
 	}

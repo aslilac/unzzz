@@ -1,15 +1,11 @@
-import assert from "assert";
-
-import Reader from "./base/reader";
-import Mappable from "./types/mappable";
-import { CENTRAL_DIRECTORY_LISTING } from "./types/signatures";
+import { ArchiveReader, assert, CENTRAL_DIRECTORY_LISTING, Mappable } from "./base";
 import LocalHeader from "./lh";
 
 export default class CentralDirectoryListing implements Mappable {
 	_begin: number;
 	_end: number;
 
-	signature: Buffer;
+	signature: Uint8Array;
 	versionMadeBy: number;
 	versionNeeded: number;
 	bitFlag: number;
@@ -27,49 +23,48 @@ export default class CentralDirectoryListing implements Mappable {
 	externalAttributes: number;
 	fileHeaderOffset: number;
 	fileName: string;
-	extra: Buffer;
-	comment: Buffer;
+	extra: Uint8Array;
+	comment: Uint8Array;
 
 	localHeader: LocalHeader;
 
-	constructor(reader: Reader) {
-		// Assert that the signature is correct
-		assert(
-			reader.peek(4).equals(CENTRAL_DIRECTORY_LISTING),
-			"CentralDirectoryListing received reader at an invalid position",
-		);
-
+	constructor(reader: ArchiveReader) {
 		this._begin = reader.position;
-		this.signature = reader.readRaw(4);
-		this.versionMadeBy = reader.readLittleEndian(2);
-		this.versionNeeded = reader.readLittleEndian(2);
-		this.bitFlag = reader.readLittleEndian(2);
-		this.compressionMethod = reader.readLittleEndian(2);
-		this.modifiedTime = reader.readLittleEndian(2);
-		this.modifiedDate = reader.readLittleEndian(2);
-		this.crc32 = reader.readSignedLittleEndian(4);
-		this.compressedSize = reader.readLittleEndian(4);
-		this.uncompressedSize = reader.readLittleEndian(4);
-		this.fileNameLength = reader.readLittleEndian(2);
-		this.extraLength = reader.readLittleEndian(2);
-		this.commentLength = reader.readLittleEndian(2);
-		this.fileDisk = reader.readLittleEndian(2);
-		this.internalAttributes = reader.readLittleEndian(2);
-		this.externalAttributes = reader.readLittleEndian(4);
-		this.fileHeaderOffset = reader.readLittleEndian(4);
+		// Assert that the signature is correct
+		this.signature = reader.expect(CENTRAL_DIRECTORY_LISTING);
+		this.versionMadeBy = reader.readUint(2);
+		this.versionNeeded = reader.readUint(2);
+		this.bitFlag = reader.readUint(2);
+		this.compressionMethod = reader.readUint(2);
+		this.modifiedTime = reader.readUint(2);
+		this.modifiedDate = reader.readUint(2);
+		this.crc32 = reader.readInt(4);
+		this.compressedSize = reader.readUint(4);
+		this.uncompressedSize = reader.readUint(4);
+		this.fileNameLength = reader.readUint(2);
+		this.extraLength = reader.readUint(2);
+		this.commentLength = reader.readUint(2);
+		this.fileDisk = reader.readUint(2);
+		this.internalAttributes = reader.readUint(2);
+		this.externalAttributes = reader.readUint(4);
+		this.fileHeaderOffset = reader.readUint(4);
 
 		this.fileName = reader.readString(this.fileNameLength);
-		this.extra = reader.readRaw(this.extraLength);
-		this.comment = reader.readRaw(this.commentLength);
+		this.extra = reader.read(this.extraLength);
+		this.comment = reader.read(this.commentLength);
 		this._end = reader.position;
 
 		// Parse the corresponding local header
-		this.localHeader = new LocalHeader(reader.clone(this.fileHeaderOffset), this);
+		this.localHeader = new LocalHeader(
+			reader.clone(this.fileHeaderOffset),
+			this.compressedSize,
+		);
 
 		// If the compressionMethod is "stored" then the sizes should be equal
 		if (this.compressionMethod === 0) {
 			assert.strictEqual(this.compressedSize, this.uncompressedSize);
 		}
+
 		// Assert that information matches in both listings
 		assert.strictEqual(this.compressionMethod, this.localHeader.compressionMethod);
 		assert.strictEqual(this.modifiedTime, this.localHeader.modifiedTime);
