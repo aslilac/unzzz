@@ -25,6 +25,9 @@ jobs:
             - run: npm i
 
             - run: npm exec prettier -- --check .
+              if: ${{ matrix.node-version }} == 18.x
             - run: npm run lint
+              if: ${{ matrix.node-version }} == 18.x
+
             - run: npm run test
             - run: npm run build
