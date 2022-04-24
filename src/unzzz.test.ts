@@ -176,7 +176,7 @@ function mock(...files: MockFile[]) {
 	return x;
 }
 
-test("Mocked archive is parsed properly", async () => {
+test("Mocked archive is parsed properly", () => {
 	const sample = mock(
 		{
 			fileName: "a",
