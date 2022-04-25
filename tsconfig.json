@@ -10,6 +10,5 @@
 		"out": "./doc/",
 		"readme": "none"
 	},
-	"include": ["./src/**/*"],
-	"exclude": ["./**/*.test.*"]
+	"include": ["./src/**/*"]
 }
