@@ -196,3 +196,11 @@ test("Mocked archive is parsed properly", () => {
 	const archive = unzzz(sample);
 	expect(Array.from(archive).map((file) => file.fileName)).toEqual(["a", "b", "c"]);
 });
+
+// TODO: Would be cool to `fetch("https://github.com/aslilac/unzzz/archive/f16bf07ca9d203b608c01ee581a0eb435843909c.zip")`
+// and make sure that we can properly handle it, since that'a a *very* practical usage.
+// test("Real archive is parsed properly", async () => {
+// 	const file = await fs.readFile(path.join(__dirname, "./__tests__/unzzz.zip"));
+// 	const archive = unzzz(file);
+// 	expect(true).toBeTruthy();
+// });

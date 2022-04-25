@@ -1,6 +1,11 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function strictEqual(actual: any, expected: any, message?: string): void {
+const FAILED_ASSERTION_MESSAGE = "Assertion failed";
+
+export function strictEqual(
+	actual: unknown,
+	expected: unknown,
+	message: string = FAILED_ASSERTION_MESSAGE,
+): void {
 	if (actual !== expected) {
-		throw new Error(message || `Expected ${actual} to equal ${expected}`);
+		throw new Error(message);
 	}
 }

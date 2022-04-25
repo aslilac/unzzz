@@ -1,6 +1,6 @@
 {
 	"name": "unzzz",
-	"version": "1.0.0",
+	"version": "0.12.0",
 	"author": "McKayla Washburn <mckayla@hey.com>",
 	"description": "A ZIP archive reader built with native web APIs",
 	"keywords": [
@@ -15,12 +15,12 @@
 	"repository": "https://github.com/aslilac/unzzz",
 	"bugs": "https://github.com/aslilac/unzzz/issues",
 	"type": "commonjs",
-	"main": "./build/index.js",
-	"module": "./build/module/index.js",
-	"types": "./build/index.d.ts",
+	"main": "./build/unzzz.js",
+	"module": "./build/module/unzzz.js",
+	"types": "./build/unzzz.d.ts",
 	"exports": {
-		"require": "./build/index.js",
-		"import": "./build/module/index.js"
+		"require": "./build/unzzz.js",
+		"import": "./build/module/unzzz.js"
 	},
 	"files": [
 		"build/**"

@@ -34,13 +34,13 @@ export class ArchiveFile {
 		assert.strictEqual(
 			this.cdl.uncompressedSize,
 			uncompressedData.byteLength,
-			`Incorrect length for file ${name}`,
+			`Incorrect length for file ${this.fileName}`,
 		);
 
 		assert.strictEqual(
 			this.cdl.crc32,
 			crc32(uncompressedData),
-			`Incorrect crc for file ${name}`,
+			`Incorrect crc for file ${this.fileName}`,
 		);
 
 		return uncompressedData;
