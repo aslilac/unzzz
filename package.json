@@ -1,6 +1,6 @@
 {
 	"name": "unzzz",
-	"version": "0.12.0",
+	"version": "0.12.1",
 	"author": "McKayla Washburn <mckayla@hey.com>",
 	"description": "A ZIP archive reader built with native web APIs",
 	"keywords": [
