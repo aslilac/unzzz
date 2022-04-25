@@ -4,7 +4,7 @@ import {
 	LOCAL_HEADER,
 	LOCAL_HEADER_DESCRIPTOR,
 	Mappable,
-} from "./base";
+} from "../base";
 
 export interface Descriptor extends Mappable {
 	_begin: number;
@@ -16,7 +16,7 @@ export interface Descriptor extends Mappable {
 	uncompressedSize: number;
 }
 
-export default class LocalHeader implements Mappable {
+export class LocalHeader implements Mappable {
 	_begin: number;
 	_end: number;
 

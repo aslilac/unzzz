@@ -1,5 +1,9 @@
-function isNode() {
-	return typeof process !== "undefined" && process.versions?.node !== undefined;
+function useZlib() {
+	return (
+		typeof DecompressionStream === "undefined" &&
+		typeof process !== "undefined" &&
+		process.versions?.node !== undefined
+	);
 }
 
 export async function readerToArrayBuffer(
@@ -9,7 +13,6 @@ export async function readerToArrayBuffer(
 
 	do {
 		const { done, value } = await reader.read();
-
 		if (done) break;
 		chunks.push(value);
 	} while (true); // eslint-disable-line no-constant-condition
@@ -19,13 +22,14 @@ export async function readerToArrayBuffer(
 }
 
 export function inflate(buf: ArrayBuffer): Promise<ArrayBuffer> {
-	return isNode() ? inflateNode(buf) : inflateWeb(buf);
+	return useZlib() ? inflateNode(buf) : inflateWeb(buf);
 }
 
 function inflateWeb(buf: ArrayBuffer): Promise<ArrayBuffer> {
 	const inflateStream = new DecompressionStream("deflate-raw");
-	// @ts-expect-error - blob.stream() returns the web-standard `ReadableStream`,
-	// not a `NodeJS.ReadableStream`.
+	// TODO: Remove these once types are fixed eventually
+	// eslint-disable-next-line
+	// @ts-ignore - TypeScript (specifically @types/node) is lying
 	const sourceStream: ReadableStream<Uint8Array> = new Blob([buf]).stream();
 	const inflated: ReadableStreamDefaultReader<Uint8Array> = sourceStream
 		.pipeThrough(inflateStream)

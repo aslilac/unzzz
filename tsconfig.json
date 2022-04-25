@@ -3,16 +3,13 @@
 	"compilerOptions": {
 		"module": "commonjs",
 		"outDir": "./build/",
-		"lib": ["dom"],
 		"types": ["node"]
 	},
 	"typedocOptions": {
-		"excludeNotExported": true,
-		"ignoreCompilerErrors": true,
-		"mode": "file",
-		"out": "doc",
-		"readme": "none",
-		"theme": "minimal"
+		"entryPoints": ["./src/unzzz.ts"],
+		"out": "./doc/",
+		"readme": "none"
 	},
-	"include": ["./src/**/*"]
+	"include": ["./src/**/*"],
+	"exclude": ["./**/*.test.*"]
 }

@@ -2,7 +2,7 @@
 	"name": "unzzz",
 	"version": 2,
 	"scope": "partheseas",
-	"alias": ["unzzz", "unzzz.now.mckay.la"],
+	"alias": ["unzzz", "unzzz.mckayla.dev"],
 	"builds": [
 		{
 			"src": "package.json",

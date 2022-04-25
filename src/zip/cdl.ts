@@ -1,7 +1,7 @@
-import { ArchiveReader, assert, CENTRAL_DIRECTORY_LISTING, Mappable } from "./base";
-import LocalHeader from "./lh";
+import { ArchiveReader, assert, CENTRAL_DIRECTORY_LISTING, Mappable } from "../base";
+import { LocalHeader } from "./lh";
 
-export default class CentralDirectoryListing implements Mappable {
+export class CentralDirectoryListing implements Mappable {
 	_begin: number;
 	_end: number;
 

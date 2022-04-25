@@ -1,14 +1,13 @@
-# macOS
 .DS_Store
-
-# Logs
-logs
+.env*
+.idea/
+.nova/
+.vscode/
+build/
+dist/
+doc/
+node_modules/
+target/
 *.log
-npm-debug.log*
-
-# Builds
-doc
-target
-
-# Dependencies
-node_modules
+*.pyc
+*.tsbuildinfo

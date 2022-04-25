@@ -1,8 +1,5 @@
 # unzzz
 
-![package version](https://mckay.la/vbadge/unzzz/f0606d)
-[![build status](https://github.com/partheseas/unzzz/workflows/main/badge.svg)](https://github.com/partheseas/unzzz/actions)
-
 A lightweight package for reading .zip files written in TypeScript.
 
 Alternatives that exist (such as JSZip) feel overly heavy for certain use cases.
@@ -29,10 +26,13 @@ npm add unzzz
 ```javascript
 import unzzz from "unzzz";
 
-const archive = await unzzz(pathToArchive);
+const archive = unzzz(await file.arrayBuffer());
 
-for (const file of archive.files.keys()) {
-	// Retrieve a decompressed buffer of the file
-	console.log(await archive.unzipBuffer(file));
+for await (const archiveFile of archive) {
+	// Log the file name, and the first 10 bytes of each file in the archive
+	console.log(
+		archiveFile.fileName,
+		new Uint8Array(await archiveFile.arrayBuffer(), 0, 10),
+	);
 }
 ```

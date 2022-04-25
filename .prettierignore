@@ -2,6 +2,7 @@
 .env*
 build/
 dist/
+doc/
 node_modules/
 package-lock.json
 Pipfile.lock

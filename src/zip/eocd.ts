@@ -1,6 +1,6 @@
-import { ArchiveReader, assert, END_OF_CENTRAL_DIRECTORY, Mappable } from "./base";
+import { ArchiveReader, assert, END_OF_CENTRAL_DIRECTORY, Mappable } from "../base";
 
-export default class EndOfCentralDirectory implements Mappable {
+export class EndOfCentralDirectory implements Mappable {
 	_begin: number;
 	_end: number;
 

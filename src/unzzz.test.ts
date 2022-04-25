@@ -1,4 +1,5 @@
 /// <reference types="jest" />
+/// <reference types="node" />
 import unzzz from "./unzzz";
 
 interface MockFile {
@@ -193,5 +194,5 @@ test("Mocked archive is parsed properly", () => {
 	);
 
 	const archive = unzzz(sample);
-	expect(Array.from(archive)).toEqual(["a", "b", "c"]);
+	expect(Array.from(archive).map((file) => file.fileName)).toEqual(["a", "b", "c"]);
 });
