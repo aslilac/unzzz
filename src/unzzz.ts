@@ -1,4 +1,10 @@
-import { ArchiveFile, ArchiveReader, assert, END_OF_CENTRAL_DIRECTORY } from "./base";
+import {
+	ArchiveFile,
+	ArchiveReader,
+	assert,
+	END_OF_CENTRAL_DIRECTORY,
+	viewToSlice,
+} from "./base";
 import { CentralDirectoryListing, EndOfCentralDirectory } from "./zip";
 
 // export type ArchiveFiles = Record<string, CentralDirectoryListing>;
@@ -79,5 +85,5 @@ export default function unzzz(source: ArrayBuffer | ArrayBufferView): Unzzz {
 		return new Unzzz(source);
 	}
 
-	return new Unzzz(source.buffer);
+	return new Unzzz(viewToSlice(source));
 }

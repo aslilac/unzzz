@@ -76,8 +76,7 @@ export class CentralDirectoryListing implements Mappable {
 			// These values are required to be zero when a descriptor is present.
 			assert.strictEqual(this.localHeader.crc32, 0);
 			assert.strictEqual(this.localHeader.compressedSize, 0);
-			assert.strictEqual(this.localHeader.uncompressedSize, 0);
-
+			// assert.strictEqual(this.localHeader.uncompressedSize, 0);
 			assert.strictEqual(this.crc32, this.localHeader.descriptor.crc32);
 			assert.strictEqual(
 				this.compressedSize,

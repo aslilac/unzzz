@@ -1,0 +1,49 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Real archive is parsed properly 1`] = `
+Array [
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/.eslintrc.json",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/.gitattributes",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/.github/",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/.github/workflows/",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/.github/workflows/main.yml",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/.gitignore",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/.nowignore",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/.npmignore",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/CODE_OF_CONDUCT.md",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/LICENSE",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/README.md",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/jest.config.js",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/lib/",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/lib/base/",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/lib/base/crc.test.ts",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/lib/base/crc.ts",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/lib/base/reader.test.ts",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/lib/base/reader.ts",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/lib/cdl.ts",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/lib/eocd.ts",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/lib/lh.ts",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/lib/types/",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/lib/types/mappable.ts",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/lib/types/signatures.ts",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/lib/unzzz.test.ts",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/lib/unzzz.ts",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/now.json",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/package.json",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/prettier.config.js",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/tsconfig.json",
+  "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/yarn.lock",
+]
+`;
+
+exports[`Real archive is parsed properly 2`] = `
+Array [
+  "wallhaven-6q552w.jpg",
+  "__MACOSX/._wallhaven-6q552w.jpg",
+  "wallhaven-6qd6rw.jpg",
+  "__MACOSX/._wallhaven-6qd6rw.jpg",
+  "wallhaven-6qq18w.jpg",
+  "__MACOSX/._wallhaven-6qq18w.jpg",
+]
+`;

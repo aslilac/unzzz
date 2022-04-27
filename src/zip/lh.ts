@@ -69,12 +69,12 @@ export class LocalHeader implements Mappable {
 			// These should all be zero if there is a descriptor
 			assert.strictEqual(this.crc32, 0);
 			assert.strictEqual(this.compressedSize, 0);
-			assert.strictEqual(this.uncompressedSize, 0);
+			// assert.strictEqual(this.uncompressedSize, 0);
 
 			this.descriptor = {
 				_begin: this.endOfCompressedFile,
 				signature: reader.expectMaybe(LOCAL_HEADER_DESCRIPTOR),
-				crc32: reader.readUint(4),
+				crc32: reader.readInt(4),
 				compressedSize: reader.readUint(4),
 				uncompressedSize: reader.readUint(4),
 				_end: reader.position,

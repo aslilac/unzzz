@@ -5,3 +5,4 @@ export * from "./file";
 export * from "./reader";
 export * from "./signatures";
 export * from "./types";
+export * from "./util";

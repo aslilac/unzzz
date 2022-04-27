@@ -1,6 +1,9 @@
 /// <reference types="jest" />
 /// <reference types="node" />
-import unzzz from "./unzzz";
+import fs from "fs/promises";
+import path from "path";
+
+import unzzz, { Unzzz } from "./unzzz";
 
 interface MockFile {
 	fileName: string;
@@ -199,8 +202,17 @@ test("Mocked archive is parsed properly", () => {
 
 // TODO: Would be cool to `fetch("https://github.com/aslilac/unzzz/archive/f16bf07ca9d203b608c01ee581a0eb435843909c.zip")`
 // and make sure that we can properly handle it, since that'a a *very* practical usage.
-// test("Real archive is parsed properly", async () => {
-// 	const file = await fs.readFile(path.join(__dirname, "./__tests__/unzzz.zip"));
-// 	const archive = unzzz(file);
-// 	expect(true).toBeTruthy();
-// });
+test("Real archive is parsed properly", async () => {
+	const getFiles = (archive: Unzzz) => Array.from(archive).map((file) => file.fileName);
+
+	const github = await fs.readFile(path.join(__dirname, "./__tests__/github.zip"));
+	const githubArchive = unzzz(github);
+	expect(getFiles(githubArchive)).toMatchSnapshot();
+
+	const macOS = await fs.readFile(path.join(__dirname, "./__tests__/macOS.zip"));
+	const macOSArchive = unzzz(macOS);
+	expect(getFiles(macOSArchive)).toMatchSnapshot();
+
+	const exampleImage = (await macOSArchive.unzipBuffer("wallhaven-6q552w.jpg"))!;
+	expect(exampleImage.byteLength).toBe(163664);
+});

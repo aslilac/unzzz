@@ -1,3 +1,7 @@
+/**
+ * This code is dead and should probably be removed :)
+ */
+
 import { viewToUint8Array } from "./util";
 
 const adlerMod = 65521;
