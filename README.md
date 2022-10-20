@@ -8,7 +8,7 @@ without any dependencies.
 
 ## Usage
 
--   [Documentation](https://unzzz.vercel.app)
+-   [Documentation](https://aslilac.github.io/unzzz/)
 
 ```javascript
 import unzzz from "unzzz";

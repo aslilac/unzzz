@@ -1,35 +1,34 @@
 name: main
 
 on:
-    push:
-        branches: [main]
-    pull_request:
-        branches: [main]
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["**"]
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
 
-        strategy:
-            matrix:
-                node-version: [14.x, 16.x, 18.x]
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x]
 
-        steps:
-            - uses: actions/checkout@v2
+    steps:
+      - uses: actions/checkout@v2
 
-            - name: Setup Node ${{ matrix.node-version }}
-              uses: actions/setup-node@v1
-              with:
-                  node-version: ${{ matrix.node-version }}
+      - uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
 
-            - run: npm i
+      - run: npm install
 
-            - run: npm exec prettier -- --check .
-              if: ${{ matrix.node-version == '18.x' }}
-            - run: npm run lint
-              if: ${{ matrix.node-version == '18.x' }}
+      - run: npm exec prettier -- --check .
+        if: ${{ matrix.node-version == '18.x' }}
+      - run: npm run lint
+        if: ${{ matrix.node-version == '18.x' }}
 
-            - run: npm run test
-              continue-on-error: ${{ matrix.node-version == '14.x' }}
-            - run: npm run build
-              continue-on-error: ${{ matrix.node-version == '14.x' }}
+      - run: npm run test
+        continue-on-error: ${{ matrix.node-version == '14.x' }}
+      - run: npm run build
+        continue-on-error: ${{ matrix.node-version == '14.x' }}
