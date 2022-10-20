@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Real archive is parsed properly 1`] = `
-Array [
+[
   "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/",
   "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/.eslintrc.json",
   "unzzz-f16bf07ca9d203b608c01ee581a0eb435843909c/.gitattributes",
@@ -38,7 +38,7 @@ Array [
 `;
 
 exports[`Real archive is parsed properly 2`] = `
-Array [
+[
   "wallhaven-6q552w.jpg",
   "__MACOSX/._wallhaven-6q552w.jpg",
   "wallhaven-6qd6rw.jpg",
